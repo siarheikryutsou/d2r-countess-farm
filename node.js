@@ -1,6 +1,8 @@
 const http = require("http");
 const fs = require("fs").promises;
-const host = '127.0.0.1';
+const url = require("url");
+const path = require("path");
+const host = "127.0.0.1";
 const port = 3000;
 const configFileName = "config.json";
 const configDefaultFileName = "config_default.json";
@@ -10,7 +12,8 @@ let indexFile;
 let configFile;
 
 const requestListener = (req, res) => {
-	if (req.method == 'POST') {
+
+	if (req.method === "POST") {
 		let body = "";
 		req.on("data", (data) => {
 			body += data;
@@ -18,29 +21,61 @@ const requestListener = (req, res) => {
 
 		req.on("end", () => {
 			updateConfig(body);
-			res.writeHead(200, {'Content-Type': 'text/html'});
+			res.writeHead(200, {"Content-Type": "text/html"});
 			res.end("Success");
 		});
-		return;
-	}
+	} else if (req.method === "GET") {
 
-	switch (req.url) {
-		case "/favicon.ico":
-			break;
-		case "/config":
-			res.setHeader("Content-Type", "application/json");
-			res.writeHead(200);
-			res.end(configFile.toString());
-			break;
-		case "/reset":
-			resetConfig();
-			res.writeHead(200, {'Content-Type': 'text/html'});
-			res.end("Success");
-			break;
-		default:
-			res.setHeader("Content-Type", "text/html");
-			res.writeHead(200);
-			res.end(indexFile);
+		const parsedUrl = url.parse(req.url);
+		const pathname = `${parsedUrl.pathname}`;
+		const ext = path.parse(pathname).ext;
+
+		const map = {
+			".ico": "image/x-icon",
+			".html": "text/html",
+			".js": "text/javascript",
+			".json": "application/json",
+			".css": "text/css",
+			".png": "image/png",
+			".jpg": "image/jpeg",
+			".wav": "audio/wav",
+			".mp3": "audio/mpeg",
+			".svg": "image/svg+xml",
+			".pdf": "application/pdf",
+			".doc": "application/msword"
+		};
+
+
+		switch (req.url) {
+			case "/config":
+				res.setHeader("Content-Type", "application/json");
+				res.writeHead(200);
+				res.end(configFile.toString());
+				break;
+			case "/reset":
+				resetConfig();
+				res.writeHead(200, {"Content-Type": "text/html"});
+				res.end("Success");
+				break;
+			case "/":
+				res.setHeader("Content-Type", "text/html");
+				res.writeHead(200);
+				res.end(indexFile);
+				break;
+			case "/favicon.ico":
+				break;
+			default:
+				fs.readFile(__dirname + pathname)
+					.then((data) => {
+						res.setHeader("Content-type", map[ext] || "text/plain");
+						res.end(data);
+					})
+					.catch(err => {
+						console.error(`Could not read ${pathname} file: ${err}`);
+						process.exit(1);
+					});
+				break;
+		}
 	}
 };
 
@@ -97,9 +132,9 @@ const writeResult = (json) => {
 	message += "Ни рун ни ключей: " + json.Nothings + "\n\n";
 	message += "Руны:\n";
 
-	for(let rune in json.Runes) {
+	for (let rune in json.Runes) {
 		let count = json.Runes[rune];
-		if(count) {
+		if (count) {
 			message += rune + ": " + count + "\n";
 		}
 	}
@@ -108,7 +143,7 @@ const writeResult = (json) => {
 };
 
 
-const resetConfig = function() {
+const resetConfig = function () {
 	fs.readFile(configDefaultFileName)
 		.then(contents => {
 			configFile = contents;

@@ -2,334 +2,85 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Title</title>
-	<style>
-
-		.hidden { visibility: hidden; }
-
-		label, input {
-			display: block;
-		}
-
-		label {
-			margin-bottom: 5px;
-		}
-
-		.row {
-			margin-bottom: 15px;
-		}
-
-		.cols-wrapper {
-			display: inline-flex;
-			flex-wrap: wrap;
-			border: 1px solid gray;
-			padding: 10px;
-		}
-
-		.col {
-			padding: 0 20px;
-			border-left: 1px solid gray;
-		}
-
-		.col:nth-child(1) {
-			border-left: none;
-		}
-
-
-		input[type="number"] {
-			width: 50px;
-		}
-
-		input#title {
-			width: 30%;
-		}
-
-		button {
-			margin-top: 20px;
-			padding: 10px 20px;
-			margin-right: 20px;
-		}
-
-		#changes-wrapper {
-			margin-right: 20px;
-		}
-
-
-	</style>
+	<title>Countess runs stats</title>
+	<link rel="stylesheet" href="static/styles/styles.css" type="text/css">
 </head>
 <body class="hidden">
-	<fieldset>
-		<legend>OBS Text builder</legend>
+<h3 id="attempt">Забег на каунтессу №</h3>
 
-		<div class="row">
-			<label id="attempt">Забег на каунтессу №</label>
-		</div>
-
-		<div class="row">
-			<label for="me">Смертей моих</label>
-			<input type="number" min="0" id="me" name="DeathsMe" data-norune="true">
-		</div>
-
-		<div class="row">
-			<label for="merk">Смертей мерка</label>
-			<input type="number" min="0" id="merk" name="Deaths" data-norune="true">
-		</div>
-
-		<h4>Добыча:</h4>
-
-		<div class="cols-wrapper">
-			<div class="col one">
-				<div class="row">
-					<label for="keys">Ключей</label>
-					<input type="number" min="0" id="keys" name="Keys" data-norune="true">
+<div class="row deaths">
+	<div class="cols-wrapper deaths">
+		<div class="col">
+			<div class="row">
+				<label for="me">Смертей моих</label>
+				<div class="input-wrapper">
+					<input type="number" id="me" name="DeathsMe" data-norune="true">
+					<img src="static/img/Death.png"/>
 				</div>
+			</div>
+		</div>
 
-				<div class="row">
-					<label for="nothing">Ни ключей ни рун</label>
-					<input type="number" min="0" id="nothing" name="Nothings" data-norune="true">
+		<div class="col">
+			<div class="row">
+				<label for="merk">Смертей мерка</label>
+				<div class="input-wrapper">
+					<input type="number" id="merk" name="Deaths" data-norune="true">
+					<img src="static/img/Death.png"/>
 				</div>
-
-				<div class="runes-wrapper"></div>
 			</div>
+		</div>
+	</div>
+</div>
 
-			<div class="col two">
-				<div class="runes-wrapper"></div>
+<div class="cols-wrapper">
+
+	<div class="col one">
+		<div class="row">
+			<label for="keys">Ключей</label>
+			<div class="input-wrapper">
+				<input type="number" id="keys" name="Keys" data-norune="true">
+				<img src="static/img/Key.png"/>
 			</div>
-
-			<div class="col three">
-				<div class="runes-wrapper"></div>
-			</div>
-
-			<div class="col four">
-				<div class="runes-wrapper"></div>
-			</div>
-
-			<div class="col five">
-				<div class="runes-wrapper"></div>
-			</div>
-
-			<div class="col six">
-				<div class="runes-wrapper"></div>
-			</div>
-
 		</div>
 
-		<div class="controls">
-			<button type="button" id="btnSave">Save</button>
-			<span id="changes-wrapper"></span>
-			<button type="button" id="btnReset">Reset</button>
+		<div class="row">
+			<label for="nothing">Ни ключей ни рун</label>
+			<div class="input-wrapper">
+				<input type="number" id="nothing" name="Nothings" data-norune="true">
+				<img src="static/img/Nothings.png"/>
+			</div>
 		</div>
 
-		<script>
-			(function() {
+		<div class="runes-wrapper"></div>
+	</div>
 
-				let elBody;
-				let elRunesWrapper;
-				let btnSave = null;
-				let btnReset = null;
-				let inputTitle = null;
-				let inputMerk = null;
-				let inputMe = null;
-				let inputNothing = null;
-				let inputKeys;
-				let runesList = ["El", "Eld", "Tir", "Nef", "Eth", "Ith", "Tal", "Ral", "Ort", "Thul", "Amn", "Sol", "Shael", "Dol", "Hel", "Io", "Lum", "Ko", "Fal", "Lem", "Pul", "Um", "Mal", "Ist", "Gul", "Vex", "Ohm", "Lo"];
-				let config;
-				let inputsList;
-				let changesWrapper;
+	<div class="col two">
+		<div class="runes-wrapper"></div>
+	</div>
 
-				function onDomContentLoaded(event) {
-					requestData().then(() => {
-						init();
-					});
-				}
+	<div class="col three">
+		<div class="runes-wrapper"></div>
+	</div>
 
+	<div class="col four">
+		<div class="runes-wrapper"></div>
+	</div>
 
-				async function requestData() {
-					let response = await fetch("/config");
-					config = await response.json();
-				}
+	<div class="col five">
+		<div class="runes-wrapper"></div>
+	</div>
 
+	<div class="col six">
+		<div class="runes-wrapper"></div>
+	</div>
 
-				function init() {
-					btnSave = document.getElementById("btnSave");
-					btnReset = document.getElementById("btnReset");
-					inputTitle = document.getElementById("attempt");
-					elRunesWrapper = document.getElementsByClassName("runes-wrapper")[0];
-					inputKeys = document.getElementById("keys");
-					inputMerk = document.getElementById("merk");
-					inputMe = document.getElementById("me");
-					inputNothing = document.getElementById("nothing");
-					changesWrapper = document.getElementById("changes-wrapper");
+</div>
 
-					btnSave.disabled = true;
-
-					inputTitle.textContent = "Забег на каунтессу № " + config.Attempt;
-
-					inputMe.value = inputMe.min = config.DeathsMe;
-					inputMerk.value = inputMerk.min = config.Deaths;
-					inputKeys.value = inputKeys.min = config.Keys;
-					inputNothing.value = inputNothing.min = config.Nothings;
-
-					fillRunes();
-
-					btnSave.addEventListener("click", (event) => {
-						btnSave.disabled = true;
-						postData().then(() => {
-							window.location.reload();
-						});
-					});
-
-					inputMe.addEventListener("change", (event) => {
-						if(parseInt(inputMe.value) > config.DeathsMe) {
-							inputMerk.value++;
-							inputMerk.dispatchEvent(new Event("change"));
-						}
-					});
-
-
-					btnReset.addEventListener("click", (event) => {
-
-						if (confirm("Точно резетим?") === true) {
-							btnReset.disabled = true;
-							requestReset().then(() => {
-								window.location.reload();
-							})
-						}
-					});
-
-					elBody = document.getElementsByTagName("body")[0];
-					elBody.classList.remove("hidden");
-
-					inputsList = document.querySelectorAll("input[type=number]");
-
-					inputsList.forEach((el) => {
-						el.addEventListener("change", (event) => { onInputChanged(event) });
-					});
-
-				}
-
-				function onInputChanged(event) {
-					const changed = hasChanges();
-					if(changed) {
-						addChanges(event.currentTarget);
-					} else {
-						removeChanges(event.currentTarget);
-					}
-					btnSave.disabled = !changed;
-				}
-
-
-				function addChanges(el) {
-					const changeId = `data-${el.name}`;
-					const value = parseInt(el.value);
-					const changeEl = changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
-					const configValue = el.hasAttribute("data-norune") ? config[el.name] : config.Runes[el.name];
-					
-
-					if(!value && changeEl.parentNode) {
-						changeEl.remove();
-						return;
-					}
-
-					changeEl.setAttribute(changeId, "");
-
-					if(!changesWrapper.contains(changeEl)) {
-						changesWrapper.append(changeEl);
-					}
-
-					changeEl.innerHTML = `(${el.labels[0].textContent}: ${value - (configValue)}); `;
-				}
-
-
-				function removeChanges(el) {
-					changesWrapper.innerHTML = "";
-				}
-
-
-				function hasChanges() {
-					for(let i = 0, len = inputsList.length; i < len; i++) {
-						let el = inputsList[i];
-						let inputValue = parseInt(el.value);
-						if(el.hasAttribute("data-norune")) {
-							if(inputValue !== config[el.name]) {
-								return true
-							}
-						} else {
-							if(inputValue !== config.Runes[el.name]) {
-								return true;
-							}
-						}
-					}
-
-					return false;
-				}
-
-
-				function fillRunes() {
-					for(let i = 0, len = runesList.length, col=Math.round(len/6), col2i = col*2, col3i = col*3, col4i=col*4, col5i=col*5; i < len; i++) {
-						let runeName = runesList[i];
-						let elRow = document.createElement("div");
-						const configRuneValue = config.Runes[runeName];
-						elRow.classList.add("row");
-						elRow.innerHTML = `<label for="${runeName.toLowerCase()}">${runeName}</label>\n<input type="number" min="${configRuneValue}" id="${runeName.toLowerCase()}" value="${configRuneValue}" name="${runeName}">`;
-						if(i === col - 1) {
-							elRunesWrapper = document.getElementsByClassName("runes-wrapper")[1];
-						} else if(i === col2i) {
-							elRunesWrapper = document.getElementsByClassName("runes-wrapper")[2];
-						} else if(i === col3i) {
-							elRunesWrapper = document.getElementsByClassName("runes-wrapper")[3];
-						} else if(i === col4i) {
-							elRunesWrapper = document.getElementsByClassName("runes-wrapper")[4];
-						} else if(i === col5i) {
-							elRunesWrapper = document.getElementsByClassName("runes-wrapper")[5];
-						}
-						elRunesWrapper.appendChild(elRow);
-					}
-
-				}
-
-				async function postData() {
-
-					let data = getData();
-
-					await fetch("/save", {
-						method: "POST",
-						headers: {
-							'Accept': 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify(data)
-					});
-				}
-
-
-				async function requestReset() {
-					await fetch("/reset");
-				}
-
-
-				function getData() {
-					const data = {
-						Attempt: config.Attempt + 1,
-						Keys: parseInt(inputKeys.value),
-						Nothings: parseInt(inputNothing.value),
-						Deaths: parseInt(inputMerk.value),
-						DeathsMe: parseInt(inputMe.value),
-						Runes: {}
-					};
-
-					for(let i = 0, len = runesList.length; i < len; i++) {
-						let runeName = runesList[i];
-						data.Runes[runeName] = parseInt(document.getElementById(runeName.toLowerCase()).value);
-					}
-
-					return data;
-				}
-
-				document.addEventListener("DOMContentLoaded", onDomContentLoaded, {once: true});
-
-			})();
-		</script>
-	</fieldset>
+<div class="controls">
+	<button type="button" id="btnSave">Save</button>
+	<span id="changes-wrapper"></span>
+	<button type="button" id="btnReset">Reset</button>
+</div>
+<script src="static/scripts/app.js"></script>
 </body>
 </html>

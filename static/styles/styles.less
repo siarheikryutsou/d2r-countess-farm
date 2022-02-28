@@ -1,0 +1,89 @@
+html, body {
+  padding: 0;
+}
+
+html {
+  margin: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+body {
+  margin: 20px;
+
+  display: inline-block;
+  #attempt {
+    margin: 20px 0;
+  }
+
+  .hidden {
+    visibility: hidden;
+  }
+
+  label, input {
+    display: block;
+  }
+
+  label {
+    margin-bottom: 5px;
+  }
+
+  .row {
+    margin-bottom: 10px;
+    &.deaths {
+      margin: 0;
+    }
+  }
+
+  .cols-wrapper {
+    display: inline-flex;
+    flex-wrap: wrap;
+
+    &.deaths {
+      padding: 0;
+
+      .col {
+        padding: 10px 20px;
+        border-bottom: 0;
+      }
+    }
+  }
+
+  .col {
+    padding: 10px 20px;
+    border: 1px solid gray;
+    &:not(:first-child) {
+      margin-left: -1px;
+    }
+  }
+
+  input {
+    &[type="number"] {
+      width: 50px;
+      display: inline-block;
+    }
+
+    &#title {
+      width: 30%;
+    }
+  }
+
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    margin-right: 20px;
+  }
+
+  #changes-wrapper {
+    margin-right: 20px;
+  }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    img {
+      margin-left: 5px;
+      height: 35px;
+    }
+  }
+}
