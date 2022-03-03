@@ -1,3 +1,5 @@
+import { Tabs } from "./tabs.js";
+
 export class App {
 	
 	_elBody = null;
@@ -20,6 +22,7 @@ export class App {
 
 	_onDomContentLoaded(event) {
 		this._requestConfig().then(() => {
+			this._initTabs();
 			this._init();
 		});
 	}
@@ -28,6 +31,14 @@ export class App {
 	_requestConfig = async () => {
 		let response = await fetch("/config");
 		this._config = await response.json();
+	}
+	
+	
+	_initTabs() {
+		const tabs = new Tabs(
+			document.querySelectorAll("#tab-buttons-wrapper button"), 
+			document.querySelectorAll("#tabs-wrapper .tab")
+		);
 	}
 
 
