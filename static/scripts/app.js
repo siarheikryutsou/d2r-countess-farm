@@ -1,112 +1,116 @@
-(function() {
+export class App {
+	
+	_elBody = null;
+	_elRunesWrapper;
+	_btnSave = null;
+	_btnReset = null;
+	_inputTitle = null;
+	_inputMerk = null;
+	_inputMe = null;
+	_inputNothing = null;
+	_inputKeys;
+	_runesList = [];
+	_config;
+	_inputsList;
+	_changesWrapper;
 
-	let elBody;
-	let elRunesWrapper;
-	let btnSave = null;
-	let btnReset = null;
-	let inputTitle = null;
-	let inputMerk = null;
-	let inputMe = null;
-	let inputNothing = null;
-	let inputKeys;
-	let runesList = [];
-	let config;
-	let inputsList;
-	let changesWrapper;
+	constructor() {
+		document.addEventListener("DOMContentLoaded", this._onDomContentLoaded.bind(this), {once: true});
+	}
 
-	function onDomContentLoaded(event) {
-		requestData().then(() => {
-			init();
+	_onDomContentLoaded(event) {
+		this._requestConfig().then(() => {
+			this._init();
 		});
 	}
 
 
-	async function requestData() {
+	_requestConfig = async () => {
 		let response = await fetch("/config");
-		config = await response.json();
+		this._config = await response.json();
 	}
 
 
-	function init() {
-		runesList = Object.keys(config.Runes);
-		btnSave = document.getElementById("btnSave");
-		btnReset = document.getElementById("btnReset");
-		inputTitle = document.getElementById("attempt");
-		elRunesWrapper = document.getElementsByClassName("runes-wrapper")[0];
-		inputKeys = document.getElementById("keys");
-		inputMerk = document.getElementById("merk");
-		inputMe = document.getElementById("me");
-		inputNothing = document.getElementById("nothing");
-		changesWrapper = document.getElementById("changes-wrapper");
+	_init() {
+		this._runesList = Object.keys(this._config.Runes);
+		this._btnSave = document.getElementById("btnSave");
+		this._btnReset = document.getElementById("btnReset");
+		this._inputTitle = document.getElementById("attempt");
+		this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[0];
+		this._inputKeys = document.getElementById("keys");
+		this._inputMerk = document.getElementById("merk");
+		this._inputMe = document.getElementById("me");
+		this._inputNothing = document.getElementById("nothing");
+		this._changesWrapper = document.getElementById("changes-wrapper");
 
-		btnSave.disabled = true;
+		this._btnSave.disabled = true;
 
-		inputTitle.textContent = "Забег на каунтессу №" + config.Attempt;
+		this._inputTitle.textContent = "Забег на каунтессу №" + this._config.Attempt;
 
-		inputMe.value = inputMe.min = config.DeathsMe.toString();
-		inputMe.max = (config.DeathsMe + 1).toString();
+		this._inputMe.value = this._inputMe.min = this._config.DeathsMe.toString();
+		this._inputMe.max = (this._config.DeathsMe + 1).toString();
 
-		inputMerk.value = inputMerk.min = config.Deaths.toString();
-		inputMerk.max = (config.Deaths + 1).toString();
+		this._inputMerk.value = this._inputMerk.min = this._config.Deaths.toString();
+		this._inputMerk.max = (this._config.Deaths + 1).toString();
 
-		inputKeys.value = inputKeys.min = config.Keys.toString();
+		this._inputKeys.value = this._inputKeys.min = this._config.Keys.toString();
 
-		inputNothing.value = inputNothing.min = config.Nothings.toString();
-		inputNothing.max = (config.Nothings + 1).toString();
+		this._inputNothing.value = this._inputNothing.min = this._config.Nothings.toString();
+		this._inputNothing.max = (this._config.Nothings + 1).toString();
 
 
-		fillRunes();
+		this._fillRunes();
 
-		btnSave.addEventListener("click", (event) => {
-			btnSave.disabled = true;
+		this._btnSave.addEventListener("click", (event) => {
+			this._btnSave.disabled = true;
 			postData().then(() => {
 				window.location.reload();
 			});
 		});
 
-		inputMe.addEventListener("change", (event) => {
-			inputMerk.value = (parseInt(inputMerk.value) + (parseInt(inputMe.value) > config.DeathsMe ? 1 : -1)).toString();
-			inputMerk.dispatchEvent(new Event("change"));
+		this._inputMe.addEventListener("change", (event) => {
+			this._inputMerk.value = (parseInt(this._inputMerk.value) + (parseInt(this._inputMe.value) > this._config.DeathsMe ? 1 : -1)).toString();
+			this._inputMerk.dispatchEvent(new Event("change"));
 		});
 
 
-		btnReset.addEventListener("click", (event) => {
+		this._btnReset.addEventListener("click", (event) => {
 
 			if (confirm("Точно резетим?") === true) {
-				btnReset.disabled = true;
+				this._btnReset.disabled = true;
 				requestReset().then(() => {
 					window.location.reload();
 				})
 			}
 		});
 
-		elBody = document.getElementsByTagName("body")[0];
-		elBody.classList.remove("hidden");
+		this._elBody = document.getElementsByTagName("body")[0];
+		this._elBody.classList.remove("hidden");
 
-		inputsList = document.querySelectorAll("input[type=number]");
+		this._inputsList = document.querySelectorAll("input[type=number]");
 
-		inputsList.forEach((el) => {
+		this._inputsList.forEach((el) => {
 			el.addEventListener("change", (event) => { onInputChanged(event) });
 		});
 
 	}
 
-	function onInputChanged(event) {
+	_onInputChanged(event) {
 		const changed = hasChanges();
 		if(changed) {
 			addChanges(event.currentTarget);
 		} else {
 			removeChanges(event.currentTarget);
 		}
-		btnSave.disabled = !changed;
+		this._btnSave.disabled = !changed;
 	}
 
 
-	function addChanges(el) {
+	_addChanges(el) {
 		const elName = el.name;
 		let changeId = `data-${elName}`;
-		let value = parseInt(el.value) - parseInt(el.hasAttribute('data-norune') ? config[elName] : config.Runes[elName]);
-		let changeEl = changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
+		let value = parseInt(el.value) - parseInt(el.hasAttribute('data-norune') ? this._config[elName] : this._config.Runes[elName]);
+		let changeEl = this._changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
 
 		if(!value && changeEl.parentNode) {
 			changeEl.remove();
@@ -115,29 +119,29 @@
 
 		changeEl.setAttribute(changeId, "");
 
-		if(!changesWrapper.contains(changeEl)) {
-			changesWrapper.append(changeEl);
+		if(!this._changesWrapper.contains(changeEl)) {
+			this._changesWrapper.append(changeEl);
 		}
 
 		changeEl.innerHTML = `(${el.labels[0].textContent}: ${value}); `;
 	}
 
 
-	function removeChanges(el) {
-		changesWrapper.innerHTML = "";
+	_removeChanges(el) {
+		this._changesWrapper.innerHTML = "";
 	}
 
 
-	function hasChanges() {
-		for(let i = 0, len = inputsList.length; i < len; i++) {
-			let el = inputsList[i];
+	_hasChanges() {
+		for(let i = 0, len = this._inputsList.length; i < len; i++) {
+			let el = this._inputsList[i];
 			let inputValue = parseInt(el.value);
 			if(el.hasAttribute("data-norune")) {
-				if(inputValue !== config[el.name]) {
+				if(inputValue !== this._config[el.name]) {
 					return true
 				}
 			} else {
-				if(inputValue !== config.Runes[el.name]) {
+				if(inputValue !== this._config.Runes[el.name]) {
 					return true;
 				}
 			}
@@ -147,11 +151,11 @@
 	}
 
 
-	function fillRunes() {
-		for(let i = 0, len = runesList.length, col=Math.round(len/6), col2i = col*2, col3i = col*3, col4i=col*4, col5i=col*5; i < len; i++) {
-			const runeName = runesList[i];
+	_fillRunes() {
+		for(let i = 0, len = this._runesList.length, col=Math.round(len/6), col2i = col*2, col3i = col*3, col4i=col*4, col5i=col*5; i < len; i++) {
+			const runeName = this._runesList[i];
 			const runeNameToLowerCase = runeName.toLowerCase();
-			const configValue = config.Runes[runeName];
+			const configValue = this._config.Runes[runeName];
 			const elRow = document.createElement("div");
 			const elLabel = document.createElement("label");
 			const wrapperEl = document.createElement("div");
@@ -164,7 +168,7 @@
 			elInput.type = "number";
 			elInput.min = configValue.toString();
 			elInput.id = runeNameToLowerCase;
-			elInput.value = config.Runes[runeName];
+			elInput.value = this._config.Runes[runeName];
 			elInput.name = runeName;
 			elImg.src = "static/img/" + runeName + ".png";
 			wrapperEl.classList.add("input-wrapper");
@@ -177,22 +181,22 @@
 			elRow.classList.add("row");
 
 			if(i === col - 1) {
-				elRunesWrapper = document.getElementsByClassName("runes-wrapper")[1];
+				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[1];
 			} else if(i === col2i) {
-				elRunesWrapper = document.getElementsByClassName("runes-wrapper")[2];
+				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[2];
 			} else if(i === col3i) {
-				elRunesWrapper = document.getElementsByClassName("runes-wrapper")[3];
+				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[3];
 			} else if(i === col4i) {
-				elRunesWrapper = document.getElementsByClassName("runes-wrapper")[4];
+				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[4];
 			} else if(i === col5i) {
-				elRunesWrapper = document.getElementsByClassName("runes-wrapper")[5];
+				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[5];
 			}
-			elRunesWrapper.appendChild(elRow);
+			this._elRunesWrapper.appendChild(elRow);
 		}
 
 	}
 
-	async function postData() {
+	_postData = async () => {
 
 		let data = getData();
 
@@ -207,29 +211,29 @@
 	}
 
 
-	async function requestReset() {
+	_requestReset = async () => {
 		await fetch("/reset");
 	}
 
 
-	function getData() {
+	_getData() {
 		const data = {
-			Attempt: config.Attempt + 1,
-			Keys: parseInt(inputKeys.value),
-			Nothings: parseInt(inputNothing.value),
-			Deaths: parseInt(inputMerk.value),
-			DeathsMe: parseInt(inputMe.value),
+			Attempt: this._config.Attempt + 1,
+			Keys: parseInt(this._inputKeys.value),
+			Nothings: parseInt(this._inputNothing.value),
+			Deaths: parseInt(this._inputMerk.value),
+			DeathsMe: parseInt(this._inputMe.value),
 			Runes: {}
 		};
 
-		for(let i = 0, len = runesList.length; i < len; i++) {
-			let runeName = runesList[i];
+		for(let i = 0, len = this._runesList.length; i < len; i++) {
+			let runeName = this._runesList[i];
 			data.Runes[runeName] = parseInt(document.getElementById(runeName.toLowerCase()).value);
 		}
 
 		return data;
 	}
 
-	document.addEventListener("DOMContentLoaded", onDomContentLoaded, {once: true});
+}
 
-})();
+new App();
