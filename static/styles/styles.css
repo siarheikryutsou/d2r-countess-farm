@@ -7,15 +7,15 @@ html {
   box-sizing: border-box;
   font-family: sans-serif;
 }
+.hidden {
+  visibility: hidden;
+}
 body {
   margin: 20px;
   display: inline-block;
 }
 body #attempt {
   margin: 20px 0;
-}
-body .hidden {
-  visibility: hidden;
 }
 body label,
 body input {
@@ -70,5 +70,27 @@ body .input-wrapper {
 body .input-wrapper img {
   margin-left: 5px;
   height: 35px;
+}
+#tab-buttons-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+  font-size: 0;
+  margin-bottom: 30px;
+}
+#tab-buttons-wrapper button {
+  margin: 0;
+  border-radius: 0;
+  border: 1px solid gray;
+  margin: -0.5px -0.5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#tab-buttons-wrapper button:hover {
+  background-color: #ddd;
+}
+#tab-buttons-wrapper button[disabled] {
+  background-color: #5a5a5a;
+  opacity: 1;
+  color: white;
 }
 /*# sourceMappingURL=styles.css.map */
