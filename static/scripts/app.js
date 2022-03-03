@@ -63,7 +63,7 @@ export class App {
 
 		this._btnSave.addEventListener("click", (event) => {
 			this._btnSave.disabled = true;
-			postData().then(() => {
+			this._postData().then(() => {
 				window.location.reload();
 			});
 		});
@@ -78,7 +78,7 @@ export class App {
 
 			if (confirm("Точно резетим?") === true) {
 				this._btnReset.disabled = true;
-				requestReset().then(() => {
+				this._requestReset().then(() => {
 					window.location.reload();
 				})
 			}
@@ -90,17 +90,17 @@ export class App {
 		this._inputsList = document.querySelectorAll("input[type=number]");
 
 		this._inputsList.forEach((el) => {
-			el.addEventListener("change", (event) => { onInputChanged(event) });
+			el.addEventListener("change", (event) => { this._onInputChanged(event) });
 		});
 
 	}
 
 	_onInputChanged(event) {
-		const changed = hasChanges();
+		const changed = this._hasChanges();
 		if(changed) {
-			addChanges(event.currentTarget);
+			this._addChanges(event.currentTarget);
 		} else {
-			removeChanges(event.currentTarget);
+			this._removeChanges(event.currentTarget);
 		}
 		this._btnSave.disabled = !changed;
 	}
@@ -198,7 +198,7 @@ export class App {
 
 	_postData = async () => {
 
-		let data = getData();
+		let data = this._getData();
 
 		await fetch("/save", {
 			method: "POST",
