@@ -7,123 +7,83 @@
 </head>
 <body class="hidden">
 
+<template id="content-template">
+	<h3 class="attempt">Забег на </h3>
+
+	<div class="row deaths">
+		<div class="cols-wrapper deaths">
+			<div class="col">
+				<div class="row">
+					<label for="me">Смертей моих</label>
+					<div class="input-wrapper">
+						<input type="number" id="me" name="DeathsMe" data-norune="true">
+						<img src="static/img/Death.png"/>
+					</div>
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="row">
+					<label for="mercenary">Смертей мерка</label>
+					<div class="input-wrapper">
+						<input type="number" id="mercenary" name="Deaths" data-norune="true">
+						<img src="static/img/Death.png"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="cols-wrapper">
+
+		<div class="col one">
+			<div class="row">
+				<label for="keys">Ключей</label>
+				<div class="input-wrapper">
+					<input type="number" id="keys" name="Keys" data-norune="true">
+					<img src="static/img/Key.png"/>
+				</div>
+			</div>
+
+			<div class="row">
+				<label for="nothing">Ни ключей ни рун</label>
+				<div class="input-wrapper">
+					<input type="number" id="nothing" name="Nothings" data-norune="true">
+					<img src="static/img/Nothings.png"/>
+				</div>
+			</div>
+
+			<div class="runes-wrapper"></div>
+		</div>
+
+		<div class="col two">
+			<div class="runes-wrapper"></div>
+		</div>
+
+		<div class="col three">
+			<div class="runes-wrapper"></div>
+		</div>
+
+		<div class="col four">
+			<div class="runes-wrapper"></div>
+		</div>
+
+		<div class="col five">
+			<div class="runes-wrapper"></div>
+		</div>
+
+		<div class="col six">
+			<div class="runes-wrapper"></div>
+		</div>
+
+	</div>
+</template>
+
 <div id="tab-buttons-wrapper">
-	<button>Countess</button>
-	<button>Summoner</button>
-	<button>Nihlathak</button>
-	<button>Cows</button>
-	<button>Travincal</button>
-	<button>Andariel</button>
-	<button>Mephisto</button>
-	<button>Diablo</button>
-	<button>Baal</button>
+
 </div>
 
 <div id="tabs-wrapper">
-	<div id="countess-wrapper" class="tab">
-		<div>Countess tab</div>
-	</div>
-
-	<div id="sumonner-wrapper" class="tab">
-		Summoner tab
-	</div>
-
-	<div id="nihlathak-wrapper" class="tab">
-		Nihlathak tab
-	</div>
-
-	<div id="cows-wrapper" class="tab">
-		Cows tab
-	</div>
-
-	<div id="travincal-wrapper" class="tab">
-		Travincal tab
-	</div>
-
-	<div id="andariel-wrapper" class="tab">
-		Andariel tab
-	</div>
-
-	<div id="mephisto-wrapper" class="tab">
-		Mephisto tab
-	</div>
-
-	<div id="diablo-wrapper" class="tab">
-		Diablo tab
-	</div>
-
-	<div id="baal-wrapper" class="tab">
-		Baal tab
-	</div>
-</div>
-
-<h3 id="attempt">Забег на каунтессу №</h3>
-
-<div class="row deaths">
-	<div class="cols-wrapper deaths">
-		<div class="col">
-			<div class="row">
-				<label for="me">Смертей моих</label>
-				<div class="input-wrapper">
-					<input type="number" id="me" name="DeathsMe" data-norune="true">
-					<img src="static/img/Death.png"/>
-				</div>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="row">
-				<label for="merk">Смертей мерка</label>
-				<div class="input-wrapper">
-					<input type="number" id="merk" name="Deaths" data-norune="true">
-					<img src="static/img/Death.png"/>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="cols-wrapper">
-
-	<div class="col one">
-		<div class="row">
-			<label for="keys">Ключей</label>
-			<div class="input-wrapper">
-				<input type="number" id="keys" name="Keys" data-norune="true">
-				<img src="static/img/Key.png"/>
-			</div>
-		</div>
-
-		<div class="row">
-			<label for="nothing">Ни ключей ни рун</label>
-			<div class="input-wrapper">
-				<input type="number" id="nothing" name="Nothings" data-norune="true">
-				<img src="static/img/Nothings.png"/>
-			</div>
-		</div>
-
-		<div class="runes-wrapper"></div>
-	</div>
-
-	<div class="col two">
-		<div class="runes-wrapper"></div>
-	</div>
-
-	<div class="col three">
-		<div class="runes-wrapper"></div>
-	</div>
-
-	<div class="col four">
-		<div class="runes-wrapper"></div>
-	</div>
-
-	<div class="col five">
-		<div class="runes-wrapper"></div>
-	</div>
-
-	<div class="col six">
-		<div class="runes-wrapper"></div>
-	</div>
 
 </div>
 
@@ -132,6 +92,7 @@
 	<span id="changes-wrapper"></span>
 	<button type="button" id="btnReset">Reset</button>
 </div>
+
 <script src="static/scripts/app.js" type="module"></script>
 </body>
 </html>

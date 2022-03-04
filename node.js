@@ -81,20 +81,48 @@ const requestListener = (req, res) => {
 
 const server = http.createServer(requestListener);
 
-const readConfig = () => {
+const initConfig = () => {
 	fs.readFile(configFileName)
 		.then(contents => {
 			configFile = contents;
 			parseConfig(configFile);
 			readHtml();
 		})
-		.catch(err => {
-			console.error(`Could not read ${configFileName} file: ${err}`);
-			process.exit(1);
+		.catch((err) => {
+			if(err.code === "ENOENT") {
+				//no config
+				createNewConfig();
+			} else {
+				console.error(`Could not read ${configFileName} file: ${err}`);
+				process.exit(1);
+			}
 		});
 };
 
-updateConfig = (json) => {
+const createNewConfig = () => {
+	readDefaultConfig().then((contents) => {
+		const defaultConfigJson = JSON.parse(contents.toString());
+		const locationsList = defaultConfigJson.locations;
+		const tabIndex = defaultConfigJson.tabIndex;
+
+		const resultData = {tabIndex: tabIndex, data: {}};
+		for(let i = 0, len = locationsList.length; i < len; i++) {
+			const locationName = locationsList[i];
+			resultData.data[locationName] = Object.assign({keysAvailable: ["Countess", "Summoner", "Nihlathak"].indexOf(locationName) !== -1}, defaultConfigJson.data);
+		}
+
+		fs.appendFile(configFileName, JSON.stringify(resultData)).then(() => {
+			onNewConfigCreated();
+		});
+	});
+}
+
+const onNewConfigCreated = () => {
+	console.log("Config created");
+	initConfig();
+}
+
+const updateConfig = (json) => {
 	fs.writeFile(configFileName, json).then(() => {
 		fs.readFile(configFileName)
 			.then(contents => {
@@ -106,7 +134,7 @@ updateConfig = (json) => {
 
 const readHtml = () => {
 	fs.readFile(__dirname + "/index.html")
-		.then(contents => {
+		.then((contents) => {
 			indexFile = contents;
 			server.listen(port, host, () => {
 				console.log(`Server is running on http://${host}:${port}`);
@@ -120,7 +148,7 @@ const readHtml = () => {
 
 const parseConfig = (configFile) => {
 	let json = JSON.parse(configFile.toString());
-	writeResult(json);
+	writeResult(json.data.Countess);
 };
 
 
@@ -144,11 +172,15 @@ const writeResult = (json) => {
 
 
 const resetConfig = function () {
-	fs.readFile(configDefaultFileName)
+	readDefaultConfig()
 		.then(contents => {
 			configFile = contents;
 			parseConfig(configFile);
 		});
 };
 
-readConfig();
+const readDefaultConfig = () => {
+	return fs.readFile(configDefaultFileName);
+}
+
+initConfig();

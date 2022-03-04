@@ -3,18 +3,16 @@ import { Tabs } from "./tabs.js";
 export class App {
 	
 	_elBody = null;
-	_elRunesWrapper;
 	_btnSave = null;
 	_btnReset = null;
-	_inputTitle = null;
-	_inputMerk = null;
-	_inputMe = null;
 	_inputNothing = null;
-	_inputKeys;
 	_runesList = [];
 	_config;
-	_inputsList;
 	_changesWrapper;
+	_configCurrentSection;
+	_locationsList;
+	_currentTabEl;
+	_currentTabIndex;
 
 	constructor() {
 		document.addEventListener("DOMContentLoaded", this._onDomContentLoaded.bind(this), {once: true});
@@ -22,53 +20,75 @@ export class App {
 
 	_onDomContentLoaded(event) {
 		this._requestConfig().then(() => {
-			this._initTabs();
 			this._init();
+			this._initTabs();
+			this._elBody = document.getElementsByTagName("body")[0];
+			this._elBody.classList.remove("hidden");
 		});
 	}
 
 
 	_requestConfig = async () => {
-		let response = await fetch("/config");
-		this._config = await response.json();
+		const response = await fetch("/config");
+		const data = await response.json();
+		this._currentTabIndex = data.tabIndex;
+		this._config = data.data;
 	}
 	
 	
 	_initTabs() {
-		const tabs = new Tabs(
-			document.querySelectorAll("#tab-buttons-wrapper button"), 
-			document.querySelectorAll("#tabs-wrapper .tab")
-		);
+		const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
+		const tabsWrapper = document.querySelector("#tabs-wrapper");
+		const tabContentsTemplate = document.querySelector("#content-template");
+
+
+		for(let locationName in this._config) {
+			const button = document.createElement("button");
+			const tabWrapper = document.createElement("div");
+			const tabContent = tabContentsTemplate.content.cloneNode(true)
+
+			button.textContent = locationName;
+			tabWrapper.classList.add("tab");
+			tabWrapper.id = locationName.toLowerCase() + "-wrapper";
+			tabWrapper.appendChild(tabContent);
+
+			tabButtonsWrapper.append(button);
+			tabsWrapper.append(tabWrapper);
+
+			this._initTabContent(tabWrapper, this._config[locationName], locationName);
+		}
+
+		const tabButtonsList = document.querySelectorAll("#tab-buttons-wrapper button");
+		const tabElsList = document.querySelectorAll("#tabs-wrapper .tab");
+
+		const tabs = new Tabs(tabButtonsList, tabElsList, this._currentTabIndex);
+		this._currentTabEl = tabElsList[tabs.activeTabIndex];
+
+		tabs.addEventListener("change", (event) => {
+			if(this._hasChanges()) {
+				if(confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
+					this._removeChanges();
+				} else {
+					event.preventDefault();
+				}
+			}
+		})
+
+		tabs.addEventListener("changed", (event) => {
+			const tabIndex = this._currentTabIndex = tabs.activeTabIndex;
+			this._configCurrentSection = this._config[this._locationsList[tabIndex]];
+			this._currentTabEl = tabElsList[tabIndex];
+		});
 	}
 
 
 	_init() {
-		this._runesList = Object.keys(this._config.Runes);
+		this._locationsList = Object.keys(this._config);
+		this._configCurrentSection = this._config[this._locationsList[this._currentTabIndex]];
+		this._runesList = Object.keys(this._configCurrentSection.Runes);
 		this._btnSave = document.getElementById("btnSave");
 		this._btnReset = document.getElementById("btnReset");
-		this._inputTitle = document.getElementById("attempt");
-		this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[0];
-		this._inputKeys = document.getElementById("keys");
-		this._inputMerk = document.getElementById("merk");
-		this._inputMe = document.getElementById("me");
-		this._inputNothing = document.getElementById("nothing");
-		this._changesWrapper = document.getElementById("changes-wrapper");
-
 		this._btnSave.disabled = true;
-
-		this._inputTitle.textContent = "Забег на каунтессу №" + this._config.Attempt;
-
-		this._inputMe.value = this._inputMe.min = this._config.DeathsMe.toString();
-		this._inputMe.max = (this._config.DeathsMe + 1).toString();
-
-		this._inputMerk.value = this._inputMerk.min = this._config.Deaths.toString();
-		this._inputMerk.max = (this._config.Deaths + 1).toString();
-
-		this._inputKeys.value = this._inputKeys.min = this._config.Keys.toString();
-
-		this._inputNothing.value = this._inputNothing.min = this._config.Nothings.toString();
-		this._inputNothing.max = (this._config.Nothings + 1).toString();
-
 
 		this._fillRunes();
 
@@ -78,12 +98,6 @@ export class App {
 				window.location.reload();
 			});
 		});
-
-		this._inputMe.addEventListener("change", (event) => {
-			this._inputMerk.value = (parseInt(this._inputMerk.value) + (parseInt(this._inputMe.value) > this._config.DeathsMe ? 1 : -1)).toString();
-			this._inputMerk.dispatchEvent(new Event("change"));
-		});
-
 
 		this._btnReset.addEventListener("click", (event) => {
 
@@ -95,15 +109,55 @@ export class App {
 			}
 		});
 
-		this._elBody = document.getElementsByTagName("body")[0];
-		this._elBody.classList.remove("hidden");
+		this._changesWrapper = document.getElementById("changes-wrapper");
+	}
 
-		this._inputsList = document.querySelectorAll("input[type=number]");
 
-		this._inputsList.forEach((el) => {
+	_initTabContent(tab, data, locationName) {
+		const idPrefix = locationName.toLowerCase() + "-";
+
+		tab.querySelectorAll("[id]").forEach((el) => {
+			const lastId = el.id;
+			const newId = idPrefix + lastId;
+			el.id = newId;
+			tab.querySelector(`[for=${lastId}]`)?.setAttribute("for", newId);
+		});
+
+		tab.querySelector(".attempt").textContent += locationName + " #" + data.Attempt;
+
+		const inputMe = tab.querySelector(`#${idPrefix}me`);
+		const inputMercenary = tab.querySelector(`#${idPrefix}mercenary`);
+		const inputsList = tab.querySelectorAll("input[type=number]");
+		const inputKeys = tab.querySelector(`#${idPrefix}keys`);
+		const inputNothing = tab.querySelector(`#${idPrefix}nothing`);
+
+		inputMe.value = inputMe.min = data.DeathsMe.toString();
+		inputMe.max = (data.DeathsMe + 1).toString();
+
+
+		inputMe.addEventListener("change", (event) => {
+			inputMercenary.value = (parseInt(inputMercenary.value) + (parseInt(inputMe.value) > data.DeathsMe ? 1 : -1)).toString();
+			inputMercenary.dispatchEvent(new Event("change"));
+		});
+
+		inputMercenary.value = inputMercenary.min = data.Deaths.toString();
+		inputMercenary.max = (data.Deaths + 1).toString();
+
+		inputKeys.value = inputKeys.min = data.Keys.toString();
+		inputKeys.disabled = !data.keysAvailable;
+
+		inputNothing.value = inputNothing.min = data.Nothings.toString();
+		inputNothing.max = (data.Nothings + 1).toString();
+
+		inputsList.forEach((el) => {
 			el.addEventListener("change", (event) => { this._onInputChanged(event) });
 		});
 
+		for(let i = 0, runesList = this._runesList, len = runesList.length; i < len; i++) {
+			const runeName = runesList[i];
+			const runeEl = tab.querySelector(`input[name=${runeName}]`);
+			runeEl.value = runeEl.min = data.Runes[runeName].toString();
+		}
 	}
 
 	_onInputChanged(event) {
@@ -118,9 +172,11 @@ export class App {
 
 
 	_addChanges(el) {
+		const elId = el.id;
 		const elName = el.name;
-		let changeId = `data-${elName}`;
-		let value = parseInt(el.value) - parseInt(el.hasAttribute('data-norune') ? this._config[elName] : this._config.Runes[elName]);
+		const data = this._configCurrentSection;
+		let changeId = `data-el-id=${elId}`;
+		let value = parseInt(el.value) - parseInt(el.hasAttribute('data-norune') ? data[elName] : data.Runes[elName]);
 		let changeEl = this._changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
 
 		if(!value && changeEl.parentNode) {
@@ -128,7 +184,7 @@ export class App {
 			return;
 		}
 
-		changeEl.setAttribute(changeId, "");
+		changeEl.setAttribute("data-el-id", elId);
 
 		if(!this._changesWrapper.contains(changeEl)) {
 			this._changesWrapper.append(changeEl);
@@ -139,20 +195,27 @@ export class App {
 
 
 	_removeChanges(el) {
-		this._changesWrapper.innerHTML = "";
+		const changesWrapper = this._changesWrapper;
+		changesWrapper.querySelectorAll("span").forEach((el) => {
+			const id = el.dataset.elId;
+			const input = this._currentTabEl.querySelector(`input#${id}`);
+			input.value = input.min;
+		});
+		this._btnSave.disabled = true;
+		changesWrapper.innerHTML = "";
 	}
 
 
 	_hasChanges() {
-		for(let i = 0, len = this._inputsList.length; i < len; i++) {
-			let el = this._inputsList[i];
+		for(let i = 0, inputsList = this._currentTabEl.querySelectorAll(["input[type=number]"]), len = inputsList.length; i < len; i++) {
+			let el = inputsList[i];
 			let inputValue = parseInt(el.value);
 			if(el.hasAttribute("data-norune")) {
-				if(inputValue !== this._config[el.name]) {
+				if(inputValue !== this._configCurrentSection[el.name]) {
 					return true
 				}
 			} else {
-				if(inputValue !== this._config.Runes[el.name]) {
+				if(inputValue !== this._configCurrentSection.Runes[el.name]) {
 					return true;
 				}
 			}
@@ -163,10 +226,14 @@ export class App {
 
 
 	_fillRunes() {
+		const templateEl = document.querySelector("#content-template").content;
+		let runeWrappersList = templateEl.querySelectorAll(".runes-wrapper");
+		let elRunesWrapper = runeWrappersList[0];
+
+
 		for(let i = 0, len = this._runesList.length, col=Math.round(len/6), col2i = col*2, col3i = col*3, col4i=col*4, col5i=col*5; i < len; i++) {
 			const runeName = this._runesList[i];
 			const runeNameToLowerCase = runeName.toLowerCase();
-			const configValue = this._config.Runes[runeName];
 			const elRow = document.createElement("div");
 			const elLabel = document.createElement("label");
 			const wrapperEl = document.createElement("div");
@@ -177,9 +244,7 @@ export class App {
 			elLabel.textContent = runeName;
 
 			elInput.type = "number";
-			elInput.min = configValue.toString();
 			elInput.id = runeNameToLowerCase;
-			elInput.value = this._config.Runes[runeName];
 			elInput.name = runeName;
 			elImg.src = "static/img/" + runeName + ".png";
 			wrapperEl.classList.add("input-wrapper");
@@ -192,17 +257,17 @@ export class App {
 			elRow.classList.add("row");
 
 			if(i === col - 1) {
-				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[1];
+				elRunesWrapper = runeWrappersList[1];
 			} else if(i === col2i) {
-				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[2];
+				elRunesWrapper = runeWrappersList[2];
 			} else if(i === col3i) {
-				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[3];
+				elRunesWrapper = runeWrappersList[3];
 			} else if(i === col4i) {
-				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[4];
+				elRunesWrapper = runeWrappersList[4];
 			} else if(i === col5i) {
-				this._elRunesWrapper = document.getElementsByClassName("runes-wrapper")[5];
+				elRunesWrapper = runeWrappersList[5];
 			}
-			this._elRunesWrapper.appendChild(elRow);
+			elRunesWrapper.appendChild(elRow);
 		}
 
 	}
@@ -232,7 +297,7 @@ export class App {
 			Attempt: this._config.Attempt + 1,
 			Keys: parseInt(this._inputKeys.value),
 			Nothings: parseInt(this._inputNothing.value),
-			Deaths: parseInt(this._inputMerk.value),
+			Deaths: parseInt(this._inputMercenary.value),
 			DeathsMe: parseInt(this._inputMe.value),
 			Runes: {}
 		};

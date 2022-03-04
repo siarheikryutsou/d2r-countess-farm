@@ -75,7 +75,6 @@ body .input-wrapper img {
   display: inline-flex;
   flex-wrap: wrap;
   font-size: 0;
-  margin-bottom: 30px;
 }
 #tab-buttons-wrapper button {
   margin: 0;

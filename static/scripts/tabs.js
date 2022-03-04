@@ -1,4 +1,4 @@
-export class Tabs {
+export class Tabs extends EventTarget {
 
 	_buttons = null;
 	_tabEls = null;
@@ -6,9 +6,10 @@ export class Tabs {
 	_activeTabDisplayStyle;
 
 	constructor(buttons, tabEls, activeIndex=0, activeTabDisplayStyle="block") {
+		super();
 		this._buttons = buttons;
 		this._tabEls = tabEls;
-		this._activeIndex = activeIndex;
+		this._activeIndex = activeIndex || 0;
 		this._activeTabDisplayStyle = activeTabDisplayStyle;
 		
 		this._init();
@@ -42,16 +43,22 @@ export class Tabs {
 	
 	
 	_onTabButtonClick(event) {
+		const changeEvent = new Event("change", {bubbles: true, cancelable: true});
+		this.dispatchEvent(changeEvent);
+		if(changeEvent.defaultPrevented) {
+			return;
+		}
+
 		const index = this._getActiveIndexByButton(event.currentTarget);
 		this._deactivateActiveTab();
 		this._activeIndex = index;
 		this._activateTab();
+		this.dispatchEvent(new Event("changed"));
 	}
 	
 	
 	_getActiveIndexByButton(button) {
 		for(let i = 0, len = this._buttons.length; i < len; i++) {
-			console.log(i);
 			if(button === this._buttons[i]) {
 				return i;
 			}
@@ -59,4 +66,14 @@ export class Tabs {
 		
 		return -1;
 	}
+
+	get activeTabIndex() {
+		return this._activeIndex;
+	}
+
+	set activeTabIndex(value) {
+		this._buttons[value].click();
+	}
+
+
 }
