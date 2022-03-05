@@ -6,7 +6,7 @@ const host = "127.0.0.1";
 const port = 3000;
 const configFileName = "config.json";
 const configDefaultFileName = "config_default.json";
-const resultFileName = "countess.txt";
+const resultFileName = "result.txt";
 
 let indexFile;
 let configFile;
@@ -122,12 +122,18 @@ const onNewConfigCreated = () => {
 	initConfig();
 }
 
-const updateConfig = (json) => {
-	fs.writeFile(configFileName, json).then(() => {
+const updateConfig = (requestBody) => {
+	const requestBodyJson = JSON.parse(requestBody);
+	const currentConfigJson = JSON.parse(configFile.toString());
+
+	currentConfigJson.tabIndex = requestBodyJson.tabIndex;
+	currentConfigJson.data[requestBodyJson.location] = requestBodyJson.data;
+
+	fs.writeFile(configFileName, JSON.stringify(currentConfigJson)).then(() => {
 		fs.readFile(configFileName)
-			.then(contents => {
+			.then((contents) => {
 				configFile = contents;
-				writeResult(JSON.parse(json));
+				writeResult(currentConfigJson);
 			});
 	});
 };
@@ -148,22 +154,25 @@ const readHtml = () => {
 
 const parseConfig = (configFile) => {
 	let json = JSON.parse(configFile.toString());
-	writeResult(json.data.Countess);
+	writeResult(json);
 };
 
 
 const writeResult = (json) => {
-	let message = "Забег на каунтессу №" + json.Attempt + "\n\n";
-	message += "Я умер раз: " + json.DeathsMe + "\n\n";
-	message += "Мерк умер раз: " + json.Deaths + "\n\n";
-	message += "Ключей: " + json.Keys + "\n\n";
-	message += "Ни рун ни ключей: " + json.Nothings + "\n\n";
-	message += "Руны:\n";
+	const location = Object.keys(json.data)[json.tabIndex];
+	const data =  json.data[location];
 
-	for (let rune in json.Runes) {
-		let count = json.Runes[rune];
+	let message = `Забег на ${location} #${data.Attempt}\n\n`;
+	message += `Я умер раз: ${data.DeathsMe}\n\n`;
+	message += `Мерк умер раз: ${data.Deaths}\n\n`;
+	message += `Ключей: ${data.Keys}\n\n`;
+	message += `Ни рун ни ключей: ${data.Nothings}\n\n`;
+	message += `Руны:\n`;
+
+	for (let rune in data.Runes) {
+		let count = data.Runes[rune];
 		if (count) {
-			message += rune + ": " + count + "\n";
+			message += `${rune}: ${count}\n`;
 		}
 	}
 

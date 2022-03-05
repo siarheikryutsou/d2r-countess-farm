@@ -1,5 +1,6 @@
-config.json
-countess.txt
-.git
-.idea
+/config.json
+/countess.txt
+/.git
+/.idea
 /actual configs/
+/result.txt

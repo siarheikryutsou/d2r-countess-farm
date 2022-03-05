@@ -294,17 +294,22 @@ export class App {
 
 	_getData() {
 		const data = {
-			Attempt: this._config.Attempt + 1,
-			Keys: parseInt(this._inputKeys.value),
-			Nothings: parseInt(this._inputNothing.value),
-			Deaths: parseInt(this._inputMercenary.value),
-			DeathsMe: parseInt(this._inputMe.value),
-			Runes: {}
+			location: this._locationsList[this._currentTabIndex],
+			tabIndex: this._currentTabIndex,
+			data: {
+				keysAvailable: this._configCurrentSection.keysAvailable,
+				Attempt: this._configCurrentSection.Attempt + 1,
+				Keys: parseInt(this._currentTabEl.querySelector(`input[name=Keys]`).value),
+				Nothings: parseInt(this._currentTabEl.querySelector(`input[name=Nothings]`).value),
+				Deaths: parseInt(this._currentTabEl.querySelector(`input[name=Deaths]`).value),
+				DeathsMe: parseInt(this._currentTabEl.querySelector(`input[name=DeathsMe]`).value),
+				Runes: {}
+			}
 		};
 
 		for(let i = 0, len = this._runesList.length; i < len; i++) {
 			let runeName = this._runesList[i];
-			data.Runes[runeName] = parseInt(document.getElementById(runeName.toLowerCase()).value);
+			data.data.Runes[runeName] = parseInt(this._currentTabEl.querySelector(`input[name=${runeName}]`).value);
 		}
 
 		return data;
