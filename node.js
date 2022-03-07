@@ -105,7 +105,9 @@ const createNewConfig = () => {
 		const locationsList = defaultConfigJson.locations;
 		const tabIndex = defaultConfigJson.tabIndex;
 
-		const resultData = {tabIndex: tabIndex, data: {}};
+
+
+		const resultData = {tabIndex: tabIndex, data: {}, dateCreation: new Date()};
 		for(let i = 0, len = locationsList.length; i < len; i++) {
 			const locationName = locationsList[i];
 			resultData.data[locationName] = Object.assign({keysAvailable: ["Countess", "Summoner", "Nihlathak"].indexOf(locationName) !== -1}, defaultConfigJson.data);
