@@ -34,19 +34,17 @@ body .cols-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
 }
-body .cols-wrapper.deaths {
+body .cols-wrapper.top {
   padding: 0;
 }
-body .cols-wrapper.deaths .col {
+body .cols-wrapper.top .col {
   padding: 10px 20px;
   border-bottom: 0;
 }
 body .col {
   padding: 10px 20px;
   border: 1px solid gray;
-}
-body .col:not(:first-child) {
-  margin-left: -1px;
+  margin-right: -1px;
 }
 body input[type="number"] {
   width: 50px;

@@ -1,82 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Countess runs stats</title>
-	<link rel="stylesheet" href="static/styles/styles.css" type="text/css">
+    <meta charset="UTF-8">
+    <title>Countess runs stats</title>
+    <link rel="stylesheet" href="static/styles/styles.css" type="text/css">
 </head>
 <body class="hidden">
 
 <template id="content-template">
-	<h3 class="attempt">Забег на </h3>
+    <h3 class="attempt">Забег на </h3>
 
-	<div class="row deaths">
-		<div class="cols-wrapper deaths">
-			<div class="col">
-				<div class="row">
-					<label for="me">Смертей моих</label>
-					<div class="input-wrapper">
-						<input type="number" id="me" name="DeathsMe" data-norune="true">
-						<img src="static/img/Death.png"/>
-					</div>
-				</div>
-			</div>
+    <div class="cols-wrapper top">
 
-			<div class="col">
-				<div class="row">
-					<label for="mercenary">Смертей мерка</label>
-					<div class="input-wrapper">
-						<input type="number" id="mercenary" name="Deaths" data-norune="true">
-						<img src="static/img/Death.png"/>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+        <div class="col keys">
+            <div class="row">
+                <label for="keys">Ключей</label>
+                <div class="input-wrapper">
+                    <input type="number" id="keys" name="Keys" data-norune="true">
+                    <img src="static/img/Key.png"/>
+                </div>
+            </div>
+        </div>
 
-	<div class="cols-wrapper">
+        <div class="col">
+            <div class="row">
+                <label for="nothing">Ни ключей ни рун</label>
+                <div class="input-wrapper">
+                    <input type="number" id="nothing" name="Nothings" data-norune="true">
+                    <img src="static/img/Nothings.png"/>
+                </div>
+            </div>
+        </div>
 
-		<div class="col one">
-			<div class="row">
-				<label for="keys">Ключей</label>
-				<div class="input-wrapper">
-					<input type="number" id="keys" name="Keys" data-norune="true">
-					<img src="static/img/Key.png"/>
-				</div>
-			</div>
+        <div class="col">
+            <div class="row">
+                <label for="me">Смертей моих</label>
+                <div class="input-wrapper">
+                    <input type="number" id="me" name="DeathsMe" data-norune="true">
+                    <img src="static/img/Death.png"/>
+                </div>
+            </div>
+        </div>
 
-			<div class="row">
-				<label for="nothing">Ни ключей ни рун</label>
-				<div class="input-wrapper">
-					<input type="number" id="nothing" name="Nothings" data-norune="true">
-					<img src="static/img/Nothings.png"/>
-				</div>
-			</div>
+        <div class="col">
+            <div class="row">
+                <label for="mercenary">Смертей мерка</label>
+                <div class="input-wrapper">
+                    <input type="number" id="mercenary" name="Deaths" data-norune="true">
+                    <img src="static/img/Death.png"/>
+                </div>
+            </div>
+        </div>
+    </div>
 
-			<div class="runes-wrapper"></div>
-		</div>
+    <div class="cols-wrapper">
 
-		<div class="col two">
-			<div class="runes-wrapper"></div>
-		</div>
+        <div class="col one">
+            <div class="runes-wrapper"></div>
+        </div>
 
-		<div class="col three">
-			<div class="runes-wrapper"></div>
-		</div>
+        <div class="col two">
+            <div class="runes-wrapper"></div>
+        </div>
 
-		<div class="col four">
-			<div class="runes-wrapper"></div>
-		</div>
+        <div class="col three">
+            <div class="runes-wrapper"></div>
+        </div>
 
-		<div class="col five">
-			<div class="runes-wrapper"></div>
-		</div>
+        <div class="col four">
+            <div class="runes-wrapper"></div>
+        </div>
 
-		<div class="col six">
-			<div class="runes-wrapper"></div>
-		</div>
+        <div class="col five">
+            <div class="runes-wrapper"></div>
+        </div>
 
-	</div>
+        <div class="col six">
+            <div class="runes-wrapper"></div>
+        </div>
+
+    </div>
 </template>
 
 <div id="tab-buttons-wrapper">
@@ -88,9 +91,10 @@
 </div>
 
 <div class="controls">
-	<button type="button" id="btnSave">Save</button>
-	<span id="changes-wrapper"></span>
-	<button type="button" id="btnReset">Reset</button>
+    <button type="button" id="btnSave">Save</button>
+    <button type="button" id="btnSaveNothings">Save Nothings</button>
+    <span id="changes-wrapper"></span>
+    <button type="button" id="btnReset">Reset all records</button>
 </div>
 
 <script src="static/scripts/app.js" type="module"></script>

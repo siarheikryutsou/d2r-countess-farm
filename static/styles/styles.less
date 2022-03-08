@@ -16,6 +16,7 @@ body {
   margin: 20px;
 
   display: inline-block;
+
   #attempt {
     margin: 20px 0;
   }
@@ -30,6 +31,7 @@ body {
 
   .row {
     margin-bottom: 10px;
+
     &.deaths {
       margin: 0;
     }
@@ -39,7 +41,7 @@ body {
     display: inline-flex;
     flex-wrap: wrap;
 
-    &.deaths {
+    &.top {
       padding: 0;
 
       .col {
@@ -52,9 +54,7 @@ body {
   .col {
     padding: 10px 20px;
     border: 1px solid gray;
-    &:not(:first-child) {
-      margin-left: -1px;
-    }
+    margin-right: -1px;
   }
 
   input {
@@ -81,6 +81,7 @@ body {
   .input-wrapper {
     display: flex;
     align-items: center;
+
     img {
       margin-left: 5px;
       height: 35px;

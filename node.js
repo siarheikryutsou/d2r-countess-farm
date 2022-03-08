@@ -53,10 +53,28 @@ const requestListener = (req, res) => {
 				res.end(configFile.toString());
 				break;
 			case "/reset":
-				resetConfig();
-				res.writeHead(200, {"Content-Type": "text/html"});
-				res.end("Success");
+				fs.rm(configFileName)
+					.then(() => {
+						createNewConfig();
+						res.writeHead(200, {"Content-Type": "text/html"});
+						res.end("Success");
+					});
 				break;
+			case "/backup": {
+				fs.readFile(configFileName)
+					.then((config) => {
+						const regexp = /,\s|:|\s/g;
+						const dateCreation = new Date(JSON.parse(config.toString()).dateCreation).toGMTString().replaceAll(regexp, "_");
+						const now = new Date().toGMTString().replaceAll(regexp, "_");
+						const backupFileName = `backup_${dateCreation}---${now}.json`;
+						fs.copyFile(configFileName, backupFileName).then(() => {
+							console.log(`Backuo ${backupFileName} created.`);
+							res.writeHead(200, {"Content-Type": "text/html"});
+							res.end("Success");
+						})
+					});
+				break;
+			}
 			case "/":
 				res.setHeader("Content-Type", "text/html");
 				res.writeHead(200);
@@ -104,9 +122,6 @@ const createNewConfig = () => {
 		const defaultConfigJson = JSON.parse(contents.toString());
 		const locationsList = defaultConfigJson.locations;
 		const tabIndex = defaultConfigJson.tabIndex;
-
-
-
 		const resultData = {tabIndex: tabIndex, data: {}, dateCreation: new Date()};
 		for(let i = 0, len = locationsList.length; i < len; i++) {
 			const locationName = locationsList[i];
@@ -117,12 +132,12 @@ const createNewConfig = () => {
 			onNewConfigCreated();
 		});
 	});
-}
+};
 
 const onNewConfigCreated = () => {
 	console.log("Config created");
 	initConfig();
-}
+};
 
 const updateConfig = (requestBody) => {
 	const requestBodyJson = JSON.parse(requestBody);
@@ -141,18 +156,18 @@ const updateConfig = (requestBody) => {
 };
 
 const readHtml = () => {
+	if(indexFile) return;
 	fs.readFile(__dirname + "/index.html")
 		.then((contents) => {
 			indexFile = contents;
-			server.listen(port, host, () => {
-				console.log(`Server is running on http://${host}:${port}`);
-			});
+			startServer();
 		})
 		.catch(err => {
 			console.error(`Could not read index.html file: ${err}`);
 			process.exit(1);
 		});
 };
+
 
 const parseConfig = (configFile) => {
 	let json = JSON.parse(configFile.toString());
@@ -182,16 +197,21 @@ const writeResult = (json) => {
 };
 
 
-const resetConfig = function () {
-	readDefaultConfig()
-		.then(contents => {
-			configFile = contents;
-			parseConfig(configFile);
-		});
+const startServer = () => {
+	server.listen(port, host, () => {
+		console.log(`Server is running on http://${host}:${port}`);
+	});
 };
+
 
 const readDefaultConfig = () => {
 	return fs.readFile(configDefaultFileName);
+};
+
+
+const backupCurrentConfig = () => {
+
 }
+
 
 initConfig();
