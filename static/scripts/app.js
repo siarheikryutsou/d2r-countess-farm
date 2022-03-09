@@ -1,48 +1,47 @@
 import {Tabs} from "./tabs.js";
 
 export class App {
-
-    _elBody = null;
-    _btnSave = null;
+    #elBody = null;
+    #btnSave = null;
     #btnSaveNothings = null;
-    _btnReset = null;
-    _runesList = [];
-    _config;
-    _changesWrapper;
-    _configCurrentSection;
-    _locationsList;
-    _currentTabEl;
-    _currentTabIndex;
+    #btnReset = null;
+    #runesList = [];
+    #config;
+    #changesWrapper;
+    #configCurrentSection;
+    #locationsList;
+    #currentTabEl;
+    #currentTabIndex;
 
     constructor() {
-        document.addEventListener("DOMContentLoaded", this._onDomContentLoaded.bind(this), {once: true});
+        document.addEventListener("DOMContentLoaded", this.#onDomContentLoaded.bind(this), {once: true});
     }
 
-    _onDomContentLoaded(event) {
-        this._requestConfig().then(() => {
-            this._init();
-            this._initTabs();
-            this._elBody = document.getElementsByTagName("body")[0];
-            this._elBody.classList.remove("hidden");
+    #onDomContentLoaded(event) {
+        this.#requestConfig().then(() => {
+            this.#init();
+            this.#initTabs();
+            this.#elBody = document.getElementsByTagName("body")[0];
+            this.#elBody.classList.remove("hidden");
         });
     }
 
 
-    _requestConfig = async () => {
+    #requestConfig = async () => {
         const response = await fetch("/config");
         const data = await response.json();
-        this._currentTabIndex = data.tabIndex;
-        this._config = data.data;
+        this.#currentTabIndex = data.tabIndex;
+        this.#config = data.data;
     };
 
 
-    _initTabs() {
+    #initTabs() {
         const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
         const tabsWrapper = document.querySelector("#tabs-wrapper");
         const tabContentsTemplate = document.querySelector("#content-template");
 
 
-        for (let locationName in this._config) {
+        for (let locationName in this.#config) {
             const button = document.createElement("button");
             const tabWrapper = document.createElement("div");
             const tabContent = tabContentsTemplate.content.cloneNode(true);
@@ -55,19 +54,19 @@ export class App {
             tabButtonsWrapper.append(button);
             tabsWrapper.append(tabWrapper);
 
-            this._initTabContent(tabWrapper, this._config[locationName], locationName);
+            this.#initTabContent(tabWrapper, this.#config[locationName], locationName);
         }
 
         const tabButtonsList = document.querySelectorAll("#tab-buttons-wrapper button");
         const tabElsList = document.querySelectorAll("#tabs-wrapper .tab");
 
-        const tabs = new Tabs(tabButtonsList, tabElsList, this._currentTabIndex);
-        this._currentTabEl = tabElsList[tabs.activeTabIndex];
+        const tabs = new Tabs(tabButtonsList, tabElsList, this.#currentTabIndex);
+        this.#currentTabEl = tabElsList[tabs.activeTabIndex];
 
         tabs.addEventListener("change", (event) => {
-            if (this._hasChanges()) {
+            if (this.#hasChanges()) {
                 if (confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
-                    this._removeChanges();
+                    this.#removeChanges();
                 } else {
                     event.preventDefault();
                 }
@@ -75,42 +74,43 @@ export class App {
         });
 
         tabs.addEventListener("changed", (event) => {
-            const tabIndex = this._currentTabIndex = tabs.activeTabIndex;
-            this._configCurrentSection = this._config[this._locationsList[tabIndex]];
-            this._currentTabEl = tabElsList[tabIndex];
+            const tabIndex = this.#currentTabIndex = tabs.activeTabIndex;
+            this.#configCurrentSection = this.#config[this.#locationsList[tabIndex]];
+            this.#currentTabEl = tabElsList[tabIndex];
         });
     }
 
 
-    _init() {
-        this._locationsList = Object.keys(this._config);
-        this._configCurrentSection = this._config[this._locationsList[this._currentTabIndex]];
-        this._runesList = Object.keys(this._configCurrentSection.Runes);
-        this._btnSave = document.getElementById("btnSave");
+    #init() {
+        this.#locationsList = Object.keys(this.#config);
+        this.#configCurrentSection = this.#config[this.#getCurrentLocationName()];
+        this.#runesList = Object.keys(this.#configCurrentSection.Runes);
+        this.#btnSave = document.getElementById("btnSave");
         this.#btnSaveNothings = document.getElementById("btnSaveNothings");
-        this._btnReset = document.getElementById("btnReset");
-        this._btnSave.disabled = true;
-        this._btnSave.style.display = "none";
+        this.#btnReset = document.getElementById("btnReset");
+        this.#btnSave.disabled = true;
+        this.#btnSave.style.display = "none";
 
-        this._fillRunes();
+        this.#fillRunes();
 
         this.#btnSaveNothings.addEventListener("click", (event) => {
             this.#btnSaveNothings.disabled = true;
-            this._currentTabEl.querySelector(`input[name=Nothings]`).value++;
+            this.#getCurrentTabEl(`input[name=Nothings]`).value++;
 
-            this._postData().then(() => {
+            this.#postData().then(() => {
                 window.location.reload();
             });
         });
 
-        this._btnSave.addEventListener("click", (event) => {
-            this._btnSave.disabled = true;
-            this._postData().then(() => {
+        this.#btnSave.addEventListener("click", (event) => {
+            this.#btnSave.disabled = true;
+            this.#checkOnlyDeathAndAddNothingsIfItIs();
+            this.#postData().then(() => {
                 window.location.reload();
             });
         });
 
-        this._btnReset.addEventListener("click", (event) => {
+        this.#btnReset.addEventListener("click", (event) => {
 
             if (confirm("Вы уверены что хотите удалить все записи?") === true) {
                 if (confirm("Сохранить бекап текущего конфига?")) {
@@ -123,7 +123,7 @@ export class App {
             }
         });
 
-        this._changesWrapper = document.getElementById("changes-wrapper");
+        this.#changesWrapper = document.getElementById("changes-wrapper");
     }
 
 
@@ -135,14 +135,14 @@ export class App {
 
     #resetConfig() {
         console.log("Сносим все нахуй");
-        this._btnReset.disabled = true;
-        this._requestReset().then(() => {
+        this.#btnReset.disabled = true;
+        this.#requestReset().then(() => {
             window.location.reload();
         })
     }
 
 
-    _initTabContent(tab, data, locationName) {
+    #initTabContent(tab, data, locationName) {
         const idPrefix = locationName.toLowerCase() + "-";
 
         tab.querySelectorAll("[id]").forEach((el) => {
@@ -160,6 +160,7 @@ export class App {
         const elColKeys = tab.querySelector(".col.keys");
         const inputKeys = tab.querySelector(`#${idPrefix}keys`);
         const inputNothing = tab.querySelector(`#${idPrefix}nothing`);
+        const inputSkillers = tab.querySelector(`#${idPrefix}skillers`);
 
         inputMe.value = inputMe.min = data.DeathsMe.toString();
         inputMe.max = (data.DeathsMe + 1).toString();
@@ -179,39 +180,52 @@ export class App {
         inputNothing.value = inputNothing.min = data.Nothings.toString();
         inputNothing.max = (data.Nothings + 1).toString();
 
+        inputSkillers.value = inputSkillers.min = data.Skillers.toString();
+
         inputsList.forEach((el) => {
             el.addEventListener("change", (event) => {
-                this._onInputChanged(event)
+                this.#onInputChanged(event)
             });
         });
 
-        for (let i = 0, runesList = this._runesList, len = runesList.length; i < len; i++) {
+        for (let i = 0, runesList = this.#runesList, len = runesList.length; i < len; i++) {
             const runeName = runesList[i];
             const runeEl = tab.querySelector(`input[name=${runeName}]`);
             runeEl.value = runeEl.min = data.Runes[runeName].toString();
         }
     }
 
-    _onInputChanged(event) {
-        const changed = this._hasChanges();
+    #onInputChanged(event) {
+        const changed = this.#hasChanges();
         if (changed) {
-            this._addChanges(event.currentTarget);
+            this.#addChanges(event.currentTarget);
         } else {
-            this._removeChanges(event.currentTarget);
+            this.#removeChanges(event.currentTarget);
         }
-        this._btnSave.disabled = !changed;
+        this.#btnSave.disabled = !changed;
         this.#btnSaveNothings.style.display = !changed ? "" : "none";
-        this._btnSave.style.display = changed ? "" : "none";
+        this.#btnSave.style.display = changed ? "" : "none";
     }
 
 
-    _addChanges(el) {
+    #checkOnlyDeathAndAddNothingsIfItIs() {
+        const currentLocation = this.#getCurrentLocationName().toLowerCase();
+        const changeNodeds = this.#changesWrapper.childNodes;
+        const deaths = this.#changesWrapper.querySelectorAll(`[data-el-id=${currentLocation}-me], [data-el-id=${currentLocation}-mercenary]`);
+        if (deaths?.length === changeNodeds?.length) {
+            //only death changed, add nothing
+            this.#getCurrentTabEl("[name=Nothings]").value++;
+        }
+    }
+
+
+    #addChanges(el) {
         const elId = el.id;
         const elName = el.name;
-        const data = this._configCurrentSection;
+        const data = this.#configCurrentSection;
         let changeId = `data-el-id=${elId}`;
         let value = parseInt(el.value) - parseInt(el.hasAttribute('data-norune') ? data[elName] : data.Runes[elName]);
-        let changeEl = this._changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
+        let changeEl = this.#changesWrapper.querySelector(`[${changeId}]`) || document.createElement('span');
 
         if (!value && changeEl.parentNode) {
             changeEl.remove();
@@ -220,23 +234,23 @@ export class App {
 
         changeEl.setAttribute("data-el-id", elId);
 
-        if (!this._changesWrapper.contains(changeEl)) {
-            this._changesWrapper.append(changeEl);
+        if (!this.#changesWrapper.contains(changeEl)) {
+            this.#changesWrapper.append(changeEl);
         }
 
         changeEl.innerHTML = `(${el.labels[0].textContent}: ${value}); `;
     }
 
 
-    _removeChanges(el) {
-        const changesWrapper = this._changesWrapper;
+    #removeChanges(el) {
+        const changesWrapper = this.#changesWrapper;
         changesWrapper.querySelectorAll("span").forEach((el) => {
             const id = el.dataset.elId;
-            const input = this._currentTabEl.querySelector(`input#${id}`);
+            const input = this.#getCurrentTabEl(`input#${id}`);
             input.value = input.min;
         });
-        this._btnSave.disabled = true;
-        this._btnSave.style.display = "none";
+        this.#btnSave.disabled = true;
+        this.#btnSave.style.display = "none";
         this.#btnSaveNothings.style.display = "";
         this.#btnSaveNothings.disabled = false;
 
@@ -244,16 +258,16 @@ export class App {
     }
 
 
-    _hasChanges() {
-        for (let i = 0, inputsList = this._currentTabEl.querySelectorAll(["input[type=number]"]), len = inputsList.length; i < len; i++) {
+    #hasChanges() {
+        for (let i = 0, inputsList = this.#getCurrentTabElList(["input[type=number]"]), len = inputsList.length; i < len; i++) {
             let el = inputsList[i];
             let inputValue = parseInt(el.value);
             if (el.hasAttribute("data-norune")) {
-                if (inputValue !== this._configCurrentSection[el.name]) {
+                if (inputValue !== this.#configCurrentSection[el.name]) {
                     return true
                 }
             } else {
-                if (inputValue !== this._configCurrentSection.Runes[el.name]) {
+                if (inputValue !== this.#configCurrentSection.Runes[el.name]) {
                     return true;
                 }
             }
@@ -263,14 +277,14 @@ export class App {
     }
 
 
-    _fillRunes() {
+    #fillRunes() {
         const templateEl = document.querySelector("#content-template").content;
         let runeWrappersList = templateEl.querySelectorAll(".runes-wrapper");
         let elRunesWrapper = runeWrappersList[0];
 
 
-        for (let i = 0, j = 0, len = this._runesList.length, col = Math.round(len / 6), col2i = col * 2, col3i = col * 3, col4i = col * 4, col5i = col * 5; i < len; i++) {
-            const runeName = this._runesList[i];
+        for (let i = 0, j = 0, len = this.#runesList.length, col = Math.round(len / 6), col2i = col * 2, col3i = col * 3, col4i = col * 4, col5i = col * 5; i < len; i++) {
+            const runeName = this.#runesList[i];
             const runeNameToLowerCase = runeName.toLowerCase();
             const elRow = document.createElement("div");
             const elLabel = document.createElement("label");
@@ -294,7 +308,7 @@ export class App {
 
             elRow.classList.add("row");
 
-            if (i % 6 === 0) {
+            if (i % 7 === 0) {
                 elRunesWrapper = runeWrappersList[j++];
             }
 
@@ -303,9 +317,9 @@ export class App {
 
     }
 
-    _postData = async () => {
+    #postData = async () => {
 
-        let data = this._getData();
+        let data = this.#getData();
 
         await fetch("/save", {
             method: "POST",
@@ -318,32 +332,48 @@ export class App {
     };
 
 
-    _requestReset = async () => {
+    #requestReset = async () => {
         await fetch("/reset");
     };
 
 
-    _getData() {
+    #getData() {
         const data = {
-            location: this._locationsList[this._currentTabIndex],
-            tabIndex: this._currentTabIndex,
+            location: this.#getCurrentLocationName(),
+            tabIndex: this.#currentTabIndex,
             data: {
-                keysAvailable: this._configCurrentSection.keysAvailable,
-                Attempt: this._configCurrentSection.Attempt + 1,
-                Keys: parseInt(this._currentTabEl.querySelector(`input[name=Keys]`).value),
-                Nothings: parseInt(this._currentTabEl.querySelector(`input[name=Nothings]`).value),
-                Deaths: parseInt(this._currentTabEl.querySelector(`input[name=Deaths]`).value),
-                DeathsMe: parseInt(this._currentTabEl.querySelector(`input[name=DeathsMe]`).value),
+                keysAvailable: this.#configCurrentSection.keysAvailable,
+                Attempt: this.#configCurrentSection.Attempt + 1,
+                Keys: parseInt(this.#getCurrentTabEl(`input[name=Keys]`).value),
+                Nothings: parseInt(this.#getCurrentTabEl(`input[name=Nothings]`).value),
+                Deaths: parseInt(this.#getCurrentTabEl(`input[name=Deaths]`).value),
+                DeathsMe: parseInt(this.#getCurrentTabEl(`input[name=DeathsMe]`).value),
+                Skillers: parseInt(this.#getCurrentTabEl(`input[name=Skillers]`).value),
                 Runes: {}
             }
         };
 
-        for (let i = 0, len = this._runesList.length; i < len; i++) {
-            let runeName = this._runesList[i];
-            data.data.Runes[runeName] = parseInt(this._currentTabEl.querySelector(`input[name=${runeName}]`).value);
+        for (let i = 0, len = this.#runesList.length; i < len; i++) {
+            let runeName = this.#runesList[i];
+            data.data.Runes[runeName] = parseInt(this.#getCurrentTabEl(`input[name=${runeName}]`).value);
         }
 
         return data;
+    }
+
+
+    #getCurrentLocationName() {
+        return this.#locationsList[this.#currentTabIndex];
+    }
+
+
+    #getCurrentTabEl(selector) {
+        return this.#currentTabEl.querySelector(selector);
+    }
+
+
+    #getCurrentTabElList(selector) {
+        return this.#currentTabEl.querySelectorAll(selector);
     }
 
 }

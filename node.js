@@ -182,8 +182,9 @@ const writeResult = (json) => {
 	let message = `Забег на ${location} #${data.Attempt}\n\n`;
 	message += `Я умер раз: ${data.DeathsMe}\n\n`;
 	message += `Мерк умер раз: ${data.Deaths}\n\n`;
+	message += `Ничего: ${data.Nothings}\n\n`;
 	message += `Ключей: ${data.Keys}\n\n`;
-	message += `Ни рун ни ключей: ${data.Nothings}\n\n`;
+	message += `Скиллеров: ${data.Skillers}\n\n`;
 	message += `Руны:\n`;
 
 	for (let rune in data.Runes) {
@@ -207,11 +208,5 @@ const startServer = () => {
 const readDefaultConfig = () => {
 	return fs.readFile(configDefaultFileName);
 };
-
-
-const backupCurrentConfig = () => {
-
-}
-
 
 initConfig();
