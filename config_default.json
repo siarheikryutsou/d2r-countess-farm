@@ -1,6 +1,6 @@
 {
   "tabIndex": 0,
-  "locations": ["Countess", "Summoner", "Nihlathak", "Cows", "Pindleskin","Travincal", "Andariel", "Mephisto", "Diablo", "Baal"],
+  "locations": ["Countess", "Summoner", "Nihlathak", "Cows", "Pindleskin", "Travincal", "LowerCurast", "ThePit", "Mausoleum", "AncientTunnels", "ForgottenTemple", "RuinedFane", "DisusedReliquary", "Andariel", "Mephisto", "RiverOfFlame", "Diablo", "Baal"],
   "data": {
     "Attempt": 1,
     "Keys": 0,
