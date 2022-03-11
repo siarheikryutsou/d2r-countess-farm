@@ -1,3 +1,8 @@
+@font-face {
+  font-family: d2font;
+  src: url('/static/fonts/font.ttf');
+}
+
 html, body {
   padding: 0;
 }
@@ -5,12 +10,18 @@ html, body {
 html {
   margin: 0;
   box-sizing: border-box;
-  font-family: sans-serif;
 }
 
 .hidden {
   visibility: hidden;
 }
+
+body, button, input, select {
+  font-size: 16px;
+  font-family: d2font, sans-serif;
+  word-spacing: 0.4rem;
+}
+
 
 body {
   margin: 20px;
@@ -40,11 +51,11 @@ body {
   .cols-wrapper {
     display: inline-flex;
     flex-wrap: wrap;
-    margin-top: -1px;
 
     &.top {
       padding: 0;
       width: 100%;
+
       .col {
         padding: 10px 20px;
       }
@@ -55,6 +66,7 @@ body {
     padding: 10px 20px;
     border: 1px solid gray;
     margin-right: -1px;
+    margin-top: -1px;
   }
 
   input {
@@ -87,6 +99,17 @@ body {
       height: 35px;
     }
   }
+
+  .uniques-color {
+    //color: #c3b076;
+    color: #796320;
+  }
+
+  .set-color {
+    //color: #43ea00;
+    color: #4cd016;
+  }
+
 }
 
 #tab-buttons-wrapper {
@@ -110,6 +133,68 @@ body {
       background-color: #5a5a5a;
       opacity: 1;
       color: white;
+    }
+  }
+}
+
+.route-planner-wrapper {
+  padding: 20px 20px 10px 20px;
+  border: 1px solid grey;
+  margin-top: 30px;
+  display: inline-flex;
+  flex-wrap: wrap;
+
+  & > *:not(:last-child) {
+    margin-right: 15px;
+  }
+
+  select, .route-location {
+    padding: 10px 10px;
+    margin-bottom: 20px;
+  }
+
+  .route-location {
+    border: 1px solid grey;
+    border-radius: 5px;
+    cursor: move;
+    user-select: none;
+    background: #e6fffd;
+    box-sizing: border-box;
+    position: relative;
+
+    &.drag-enter {
+      border: 1px dashed grey;
+    }
+
+    .close-button {
+      position: absolute;
+      right: -10px;
+      top: -10px;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border: 1px solid grey;
+      cursor: pointer;
+
+      &:before, &:after {
+        position: absolute;
+        left: 10px;
+        top: 4px;
+        content: ' ';
+        height: 12px;
+        width: 1px;
+        background-color: #333;
+      }
+
+      &:before {
+        transform: rotate(45deg);
+      }
+
+      &:after {
+        transform: rotate(-45deg);
+      }
+
     }
   }
 }

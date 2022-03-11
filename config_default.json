@@ -1,6 +1,7 @@
 {
   "tabIndex": 0,
   "locations": ["Countess", "Summoner", "Nihlathak", "Cows", "Pindleskin", "Travincal", "LowerCurast", "ThePit", "Mausoleum", "AncientTunnels", "ForgottenTemple", "RuinedFane", "DisusedReliquary", "Andariel", "Mephisto", "RiverOfFlame", "Diablo", "Baal"],
+  "lastSave": "Never",
   "data": {
     "Attempt": 1,
     "Keys": 0,
@@ -8,6 +9,9 @@
     "Deaths": 0,
     "DeathsMe": 0,
     "Skillers": 0,
+    "Charms": 0,
+    "Uniques": 0,
+    "Sets": 0,
     "Runes": {
       "El": 0,
       "Eld": 0,

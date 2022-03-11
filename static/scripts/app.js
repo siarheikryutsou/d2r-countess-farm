@@ -1,4 +1,5 @@
 import {Tabs} from "./tabs.js";
+import {RoutePlanner} from "./routePlanner.js";
 
 export class App {
     #elBody = null;
@@ -12,6 +13,8 @@ export class App {
     #locationsList;
     #currentTabEl;
     #currentTabIndex;
+    #lastSaveInfo;
+    #routePlanner;
 
     constructor() {
         document.addEventListener("DOMContentLoaded", this.#onDomContentLoaded.bind(this), {once: true});
@@ -21,6 +24,7 @@ export class App {
         this.#requestConfig().then(() => {
             this.#init();
             this.#initTabs();
+            this.#initRoutePlanner();
             this.#elBody = document.getElementsByTagName("body")[0];
             this.#elBody.classList.remove("hidden");
         });
@@ -32,6 +36,7 @@ export class App {
         const data = await response.json();
         this.#currentTabIndex = data.tabIndex;
         this.#config = data.data;
+        this.#lastSaveInfo = data.lastSave;
     };
 
 
@@ -153,6 +158,7 @@ export class App {
         });
 
         tab.querySelector(".attempt").textContent += locationName + " #" + data.Attempt;
+        tab.querySelector(".last-save").textContent += this.#lastSaveInfo;
 
         const inputMe = tab.querySelector(`#${idPrefix}me`);
         const inputMercenary = tab.querySelector(`#${idPrefix}mercenary`);
@@ -161,6 +167,9 @@ export class App {
         const inputKeys = tab.querySelector(`#${idPrefix}keys`);
         const inputNothing = tab.querySelector(`#${idPrefix}nothing`);
         const inputSkillers = tab.querySelector(`#${idPrefix}skillers`);
+        const inputCharms = tab.querySelector(`#${idPrefix}charms`);
+        const inputUniques = tab.querySelector(`#${idPrefix}uniques`);
+        const inputSets = tab.querySelector(`#${idPrefix}sets`);
 
         inputMe.value = inputMe.min = data.DeathsMe.toString();
         inputMe.max = (data.DeathsMe + 1).toString();
@@ -181,6 +190,9 @@ export class App {
         inputNothing.max = (data.Nothings + 1).toString();
 
         inputSkillers.value = inputSkillers.min = data.Skillers.toString();
+        inputCharms.value = inputCharms.min = data.Charms.toString();
+        inputUniques.value = inputCharms.min = data.Uniques.toString();
+        inputSets.value = inputCharms.min = data.Sets.toString();
 
         inputsList.forEach((el) => {
             el.addEventListener("change", (event) => {
@@ -308,7 +320,7 @@ export class App {
 
             elRow.classList.add("row");
 
-            if (i % 7 === 0) {
+            if (i % 5 === 0) {
                 elRunesWrapper = runeWrappersList[j++];
             }
 
@@ -349,6 +361,9 @@ export class App {
                 Deaths: parseInt(this.#getCurrentTabEl(`input[name=Deaths]`).value),
                 DeathsMe: parseInt(this.#getCurrentTabEl(`input[name=DeathsMe]`).value),
                 Skillers: parseInt(this.#getCurrentTabEl(`input[name=Skillers]`).value),
+                Charms: parseInt(this.#getCurrentTabEl(`input[name=Charms]`).value),
+                Uniques: parseInt(this.#getCurrentTabEl(`input[name=Uniques]`).value),
+                Sets: parseInt(this.#getCurrentTabEl(`input[name=Sets]`).value),
                 Runes: {}
             }
         };
@@ -374,6 +389,11 @@ export class App {
 
     #getCurrentTabElList(selector) {
         return this.#currentTabEl.querySelectorAll(selector);
+    }
+
+
+    #initRoutePlanner() {
+        this.#routePlanner = new RoutePlanner(this.#locationsList, document.querySelector(".route-planner-wrapper"));
     }
 
 }
