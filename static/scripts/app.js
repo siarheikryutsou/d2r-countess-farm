@@ -110,6 +110,7 @@ export class App {
             this.#getCurrentTabEl(`input[name=Nothings]`).value++;
 
             this.#postData().then(() => {
+                window.onbeforeunload = () => {};
                 window.location.reload();
             });
         });
@@ -118,6 +119,7 @@ export class App {
             this.#btnSave.disabled = true;
             this.#checkOnlyDeathAndAddNothingsIfItIs();
             this.#postData().then(() => {
+                window.onbeforeunload = () => {};
                 window.location.reload();
             });
         });
@@ -177,7 +179,7 @@ export class App {
         const inputCharms = tab.querySelector(`#${idPrefix}charms`);
         const inputUniques = tab.querySelector(`#${idPrefix}uniques`);
         const inputSets = tab.querySelector(`#${idPrefix}sets`);
-        const essencesElList = tab.querySelectorAll("[data-essence=true");
+        const essencesElList = tab.querySelectorAll("[data-essence=true]");
 
         inputMe.value = inputMe.min = data.DeathsMe.toString();
         inputMe.max = (data.DeathsMe + 1).toString();
@@ -395,6 +397,10 @@ export class App {
                 Charms: parseInt(this.#getCurrentTabEl(`input[name=Charms]`).value),
                 Uniques: parseInt(this.#getCurrentTabEl(`input[name=Uniques]`).value),
                 Sets: parseInt(this.#getCurrentTabEl(`input[name=Sets]`).value),
+                AndarielEssence:parseInt(this.#getCurrentTabEl(`input[name=AndarielEssence]`).value),
+                MephistoEssence:parseInt(this.#getCurrentTabEl(`input[name=MephistoEssence]`).value),
+                DiabloEssence:parseInt(this.#getCurrentTabEl(`input[name=DiabloEssence]`).value),
+                BaalEssence:parseInt(this.#getCurrentTabEl(`input[name=BaalEssence]`).value),
                 Runes: {}
             }
         };
