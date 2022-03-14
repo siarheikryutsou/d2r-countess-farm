@@ -16,6 +16,10 @@ html {
   visibility: hidden;
 }
 
+.hidden-abs {
+  display: none !important;
+}
+
 body, button, input, select {
   font-size: 16px;
   font-family: d2font, sans-serif;
@@ -138,14 +142,28 @@ body {
 }
 
 .route-planner-wrapper {
-  padding: 20px 20px 10px 20px;
+  padding: 0 20px 20px 20px;
   border: 1px solid grey;
   margin-top: 30px;
-  display: inline-flex;
-  flex-wrap: wrap;
 
-  & > *:not(:last-child) {
-    margin-right: 15px;
+  .routes-wrapper {
+    display: inline-flex;
+    flex-wrap: wrap;
+
+    & > *:not(:last-child) {
+      margin-right: 15px;
+    }
+  }
+
+  .reverse-wrapper {
+    display: block;
+    input, label {
+      display: inline;
+    }
+  }
+
+  #clear-router {
+    display: block;
   }
 
   select, .route-location {
@@ -161,6 +179,10 @@ body {
     background: #e6fffd;
     box-sizing: border-box;
     position: relative;
+
+    &.active {
+      background-color: #e6ffbc
+    }
 
     &.drag-enter {
       border: 1px dashed grey;

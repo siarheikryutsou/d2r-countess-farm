@@ -13,6 +13,9 @@ html {
 .hidden {
   visibility: hidden;
 }
+.hidden-abs {
+  display: none !important;
+}
 body,
 button,
 input,
@@ -109,14 +112,26 @@ body .set-color {
   color: white;
 }
 .route-planner-wrapper {
-  padding: 20px 20px 10px 20px;
+  padding: 0 20px 20px 20px;
   border: 1px solid grey;
   margin-top: 30px;
+}
+.route-planner-wrapper .routes-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
 }
-.route-planner-wrapper > *:not(:last-child) {
+.route-planner-wrapper .routes-wrapper > *:not(:last-child) {
   margin-right: 15px;
+}
+.route-planner-wrapper .reverse-wrapper {
+  display: block;
+}
+.route-planner-wrapper .reverse-wrapper input,
+.route-planner-wrapper .reverse-wrapper label {
+  display: inline;
+}
+.route-planner-wrapper #clear-router {
+  display: block;
 }
 .route-planner-wrapper select,
 .route-planner-wrapper .route-location {
@@ -131,6 +146,9 @@ body .set-color {
   background: #e6fffd;
   box-sizing: border-box;
   position: relative;
+}
+.route-planner-wrapper .route-location.active {
+  background-color: #e6ffbc;
 }
 .route-planner-wrapper .route-location.drag-enter {
   border: 1px dashed grey;

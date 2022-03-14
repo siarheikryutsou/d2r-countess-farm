@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Countess runs stats</title>
+    <title>Diablo 2 drop stats</title>
     <link rel="stylesheet" href="static/styles/styles.css" type="text/css">
 </head>
 <body class="hidden">
@@ -19,6 +19,48 @@
                 <div class="input-wrapper">
                     <input type="number" id="keys" name="Keys" data-norune="true">
                     <img src="static/img/Key.png"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="col andarielessence">
+            <div class="row">
+                <label for="andarielessence">Эссенций</label>
+                <div class="input-wrapper">
+                    <input type="number" id="andarielessence" name="AndarielEssence" data-norune="true"
+                           data-essence="true">
+                    <img src="static/img/essence_andariel.png"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="col mephistoessence">
+            <div class="row">
+                <label for="mephistoessence">Эссенций</label>
+                <div class="input-wrapper">
+                    <input type="number" id="mephistoessence" name="MephistoEssence" data-norune="true"
+                           data-essence="true">
+                    <img src="static/img/essence_mephisto.png"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="col diabloessence">
+            <div class="row">
+                <label for="diabloessence">Эссенций</label>
+                <div class="input-wrapper">
+                    <input type="number" id="diabloessence" name="DiabloEssence" data-norune="true" data-essence="true">
+                    <img src="static/img/essence_diablo.png"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="col baalessence">
+            <div class="row">
+                <label for="baalessence">Эссенций</label>
+                <div class="input-wrapper">
+                    <input type="number" id="baalessence" name="BaalEssence" data-norune="true" data-essence="true">
+                    <img src="static/img/essence_baal.png"/>
                 </div>
             </div>
         </div>
@@ -92,46 +134,12 @@
         </div>
     </div>
 
-    <div class="cols-wrapper">
-
-        <div class="col one">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col two">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col three">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col four">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col five">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col six">
-            <div class="runes-wrapper"></div>
-        </div>
-
-        <div class="col seven">
-            <div class="runes-wrapper"></div>
-        </div>
-
-    </div>
+    <div class="cols-wrapper runes-wrapper"></div>
 </template>
 
-<div id="tab-buttons-wrapper">
+<div id="tab-buttons-wrapper"></div>
 
-</div>
-
-<div id="tabs-wrapper">
-
-</div>
+<div id="tabs-wrapper"></div>
 
 <div class="controls">
     <button type="button" id="btnSave">Save</button>
@@ -141,7 +149,14 @@
 </div>
 
 <div class="route-planner-wrapper hidden">
-
+    <h3>Планировщик маршрута</h3>
+    <div class="select-wrapper"></div>
+    <div class="routes-wrapper"></div>
+    <div class="reverse-wrapper hidden-abs">
+        <input type="checkbox" id="reverce-checkbox">
+        <label for="reverce-checkbox">Reverse route</label>
+    </div>
+    <button class="hidden-abs" type="button" id="clear-router" disabled>Clear route planner</button>
 </div>
 
 <script src="static/scripts/app.js" type="module"></script>

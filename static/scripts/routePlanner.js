@@ -4,9 +4,17 @@ export class RoutePlanner {
     #storage;
     #wrapper;
     #dragEl;
+    #select;
+    #routesWrapper;
+    #reverceCheckbox;
+    #clearButton;
+    #dragHandlers = {};
 
     constructor(locationsList, wrapper = document.querySelector("body")) {
         this.#wrapper = wrapper;
+        this.#routesWrapper = this.#wrapper.querySelector(".routes-wrapper");
+        this.#reverceCheckbox = wrapper.querySelector("#reverce-checkbox");
+        this.#clearButton = wrapper.querySelector("#clear-router");
         this.#locationsList = locationsList;
         this.#storage = window.sessionStorage;
 
@@ -22,7 +30,7 @@ export class RoutePlanner {
 
 
     #buildNew() {
-        const select = document.createElement("select");
+        const select = this.#select = document.createElement("select");
         const defaultOption = document.createElement("option");
 
         defaultOption.value = defaultOption.textContent = "Add location";
@@ -34,12 +42,15 @@ export class RoutePlanner {
         this.#locationsList.forEach((location) => {
             const option = document.createElement("option");
             option.value = option.textContent = location;
+            option.setAttribute("name", `option-${location}`);
             select.append(option);
         });
 
         select.addEventListener("change", this.#onLocationSelect.bind(this));
 
-        this.#wrapper.appendChild(select);
+        this.#clearButton.addEventListener("click", this.#onClearButtonClick.bind(this));
+
+        this.#routesWrapper.append(select);
     }
 
 
@@ -49,6 +60,7 @@ export class RoutePlanner {
         const location = option.value;
         option.disabled = true;
         select.options[0].selected = true;
+
         this.#addLocation(location);
     }
 
@@ -61,21 +73,45 @@ export class RoutePlanner {
     #addLocation(location) {
         const locationEl = document.createElement("div");
         const closeButton = document.createElement("div");
+        const textWrapper = document.createElement("span");
         closeButton.role = "button";
         closeButton.classList.add("close-button");
+        closeButton.addEventListener("click", this.#onRemoveLocationClick.bind(this), {once: true});
 
-        locationEl.textContent = location;
+        textWrapper.textContent = location;
+        textWrapper.classList.add("text-wrapper");
         locationEl.classList.add("route-location");
         locationEl.draggable = true;
-        locationEl.addEventListener("dragstart", this.#onDragStart.bind(this), false);
-        locationEl.addEventListener("dragover", this.#onDragOver.bind(this), false);
-        locationEl.addEventListener("dragend", this.#onDragEnd.bind(this), false);
-        locationEl.addEventListener("dragenter", this.#onDragEnter.bind(this), false);
-        locationEl.addEventListener("dragleave", this.#onDragLeave.bind(this), false);
-        locationEl.addEventListener("drop", this.#onDrop.bind(this), false);
 
+        const dragHandlers = this.#dragHandlers = {
+            dragstart: this.#onDragStart.bind(this),
+            dragover: this.#onDragOver.bind(this),
+            dragend: this.#onDragEnd.bind(this),
+            dragenter: this.#onDragEnter.bind(this),
+            dragleave: this.#onDragLeave.bind(this),
+            drop: this.#onDrop.bind(this),
+        };
+
+
+        locationEl.addEventListener("dragstart", dragHandlers.dragstart, false);
+        locationEl.addEventListener("dragover", dragHandlers.dragover, false);
+        locationEl.addEventListener("dragend", dragHandlers.dragend, false);
+        locationEl.addEventListener("dragenter", dragHandlers.dragenter, false);
+        locationEl.addEventListener("dragleave", dragHandlers.dragleave, false);
+        locationEl.addEventListener("drop", dragHandlers.drop, false);
+
+        locationEl.append(textWrapper);
         locationEl.append(closeButton);
-        this.#wrapper.append(locationEl);
+        this.#routesWrapper.append(locationEl);
+
+        if (this.#clearButton.disabled) {
+            this.#clearButton.disabled = false;
+            this.#clearButton.classList.remove("hidden-abs");
+        }
+
+        if (this.#routesWrapper.children.length === 3) {
+            this.#reverceCheckbox.parentNode.classList.remove("hidden-abs");
+        }
     }
 
 
@@ -122,14 +158,51 @@ export class RoutePlanner {
     #onDrop(event) {
         event.stopPropagation();
 
-        const el = event.currentTarget;
+        const targetEl = event.currentTarget;
+        const dragEl = this.#dragEl;
 
-        if (this.#dragEl !== el) {
-            this.#dragEl.innerHTML = el.innerHTML;
-            el.innerHTML = event.dataTransfer.getData("text/html");
+        if (dragEl !== targetEl) {
+            const targetTextWrapper = targetEl.querySelector(".text-wrapper");
+            const dragTextWrapper = dragEl.querySelector(".text-wrapper");
+            const dragElTextContent = dragTextWrapper.textContent;
+            dragTextWrapper.textContent = targetTextWrapper.textContent;
+            targetTextWrapper.textContent = dragElTextContent;
         }
 
         return false;
+    }
+
+
+    #onRemoveLocationClick(event) {
+        const closeButton = event.currentTarget;
+        const locationEl = closeButton.parentNode;
+        const locationName = locationEl.querySelector(".text-wrapper").textContent;
+        const option = this.#select.options.namedItem(`option-${locationName}`);
+        const dragHandlers = this.#dragHandlers;
+        locationEl.removeEventListener("dragstart", dragHandlers.dragstart, false);
+        locationEl.removeEventListener("dragover", dragHandlers.dragover, false);
+        locationEl.removeEventListener("dragend", dragHandlers.dragend, false);
+        locationEl.removeEventListener("dragenter", dragHandlers.dragenter, false);
+        locationEl.removeEventListener("dragleave", dragHandlers.dragleave, false);
+        locationEl.removeEventListener("drop", dragHandlers.drop, false);
+        option.disabled = false;
+        locationEl.remove();
+
+        if (this.#routesWrapper.children.length === 2) {
+            this.#reverceCheckbox.parentNode.classList.add("hidden-abs");
+            this.#reverceCheckbox.checked = false;
+        }
+    }
+
+
+    #onClearButtonClick(event) {
+        this.#clearButton.disabled = true;
+        this.#clearButton.classList.add("hidden-abs");
+        this.#reverceCheckbox.parentNode.classList.add("hidden-abs");
+        this.#reverceCheckbox.checked = false;
+        this.#routesWrapper.querySelectorAll(".route-location").forEach((locationEl) => {
+            locationEl.querySelector(".close-button").click();
+        });
     }
 
 }

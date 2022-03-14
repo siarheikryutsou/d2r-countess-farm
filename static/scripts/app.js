@@ -25,6 +25,13 @@ export class App {
             this.#init();
             this.#initTabs();
             this.#initRoutePlanner();
+
+            window.onbeforeunload = () => {
+                if (this.#hasChanges()) {
+                    return "You have unsaved changes. Are you sure, you want to close?";
+                }
+            };
+
             this.#elBody = document.getElementsByTagName("body")[0];
             this.#elBody.classList.remove("hidden");
         });
@@ -170,6 +177,7 @@ export class App {
         const inputCharms = tab.querySelector(`#${idPrefix}charms`);
         const inputUniques = tab.querySelector(`#${idPrefix}uniques`);
         const inputSets = tab.querySelector(`#${idPrefix}sets`);
+        const essencesElList = tab.querySelectorAll("[data-essence=true");
 
         inputMe.value = inputMe.min = data.DeathsMe.toString();
         inputMe.max = (data.DeathsMe + 1).toString();
@@ -193,6 +201,15 @@ export class App {
         inputCharms.value = inputCharms.min = data.Charms.toString();
         inputUniques.value = inputCharms.min = data.Uniques.toString();
         inputSets.value = inputCharms.min = data.Sets.toString();
+
+        essencesElList.forEach((el) => {
+            const currentLocationName = this.#getCurrentLocationName();
+            el.value = el.min = data[el.name];
+
+            if (el.name.split("Essence")[0] !== locationName) {
+                tab.querySelector(`.col.${el.name.toLowerCase()}`).style.display = "none";
+            }
+        });
 
         inputsList.forEach((el) => {
             el.addEventListener("change", (event) => {
@@ -291,11 +308,12 @@ export class App {
 
     #fillRunes() {
         const templateEl = document.querySelector("#content-template").content;
-        let runeWrappersList = templateEl.querySelectorAll(".runes-wrapper");
-        let elRunesWrapper = runeWrappersList[0];
+        let runesWrapper = templateEl.querySelector(".runes-wrapper");
+        let col;
+        let elRunesWrapper;
 
 
-        for (let i = 0, j = 0, len = this.#runesList.length, col = Math.round(len / 6), col2i = col * 2, col3i = col * 3, col4i = col * 4, col5i = col * 5; i < len; i++) {
+        for (let i = 0, j = 0, len = this.#runesList.length; i < len; i++) {
             const runeName = this.#runesList[i];
             const runeNameToLowerCase = runeName.toLowerCase();
             const elRow = document.createElement("div");
@@ -303,6 +321,12 @@ export class App {
             const wrapperEl = document.createElement("div");
             const elInput = document.createElement("input");
             const elImg = document.createElement("img");
+
+            if (i === 0 || i % 5 === 0) {
+                col = this.#createRunesCol();
+                runesWrapper.append(col);
+                elRunesWrapper = col.querySelector(".runes-list-wrapper");
+            }
 
             elLabel.setAttribute("for", runeNameToLowerCase);
             elLabel.textContent = runeName;
@@ -320,14 +344,21 @@ export class App {
 
             elRow.classList.add("row");
 
-            if (i % 5 === 0) {
-                elRunesWrapper = runeWrappersList[j++];
-            }
-
             elRunesWrapper.appendChild(elRow);
         }
 
     }
+
+
+    #createRunesCol() {
+        const col = document.createElement("div");
+        const content = document.createElement("div");
+        col.classList.add("col");
+        content.classList.add("runes-list-wrapper");
+        col.append(content);
+        return col;
+    }
+
 
     #postData = async () => {
 

@@ -1,3 +1,5 @@
 /.git
 /.idea
 /actual configs/
+.DS_Store
+/static/.DS_Store

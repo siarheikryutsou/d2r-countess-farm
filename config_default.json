@@ -1,6 +1,25 @@
 {
   "tabIndex": 0,
-  "locations": ["Countess", "Summoner", "Nihlathak", "Cows", "Pindleskin", "Travincal", "LowerCurast", "ThePit", "Mausoleum", "AncientTunnels", "ForgottenTemple", "RuinedFane", "DisusedReliquary", "Andariel", "Mephisto", "RiverOfFlame", "Diablo", "Baal"],
+  "locations": [
+    "Countess",
+    "Summoner",
+    "Nihlathak",
+    "Cows",
+    "Pindleskin",
+    "Travincal",
+    "LowerCurast",
+    "ThePit",
+    "Mausoleum",
+    "AncientTunnels",
+    "ForgottenTemple",
+    "RuinedFane",
+    "DisusedReliquary",
+    "Andariel",
+    "Mephisto",
+    "RiverOfFlame",
+    "Diablo",
+    "Baal"
+  ],
   "lastSave": "Never",
   "data": {
     "Attempt": 1,
@@ -12,6 +31,10 @@
     "Charms": 0,
     "Uniques": 0,
     "Sets": 0,
+    "AndarielEssence": 0,
+    "MephistoEssence": 0,
+    "DiabloEssence": 0,
+    "BaalEssence": 0,
     "Runes": {
       "El": 0,
       "Eld": 0,
