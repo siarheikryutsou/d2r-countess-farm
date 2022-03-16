@@ -205,7 +205,6 @@ export class App {
         inputSets.value = inputCharms.min = data.Sets.toString();
 
         essencesElList.forEach((el) => {
-            const currentLocationName = this.#getCurrentLocationName();
             el.value = el.min = data[el.name];
 
             if (el.name.split("Essence")[0] !== locationName) {
