@@ -6,14 +6,14 @@ export class RoutePlanner {
     #dragEl;
     #select;
     #routesWrapper;
-    #reverceCheckbox;
+    #reverseCheckbox;
     #clearButton;
     #dragHandlers = {};
 
     constructor(locationsList, wrapper = document.querySelector("body")) {
         this.#wrapper = wrapper;
         this.#routesWrapper = this.#wrapper.querySelector(".routes-wrapper");
-        this.#reverceCheckbox = wrapper.querySelector("#reverce-checkbox");
+        this.#reverseCheckbox = wrapper.querySelector("#reverce-checkbox");
         this.#clearButton = wrapper.querySelector("#clear-router");
         this.#locationsList = locationsList;
         this.#storage = window.sessionStorage;
@@ -110,7 +110,7 @@ export class RoutePlanner {
         }
 
         if (this.#routesWrapper.children.length === 3) {
-            this.#reverceCheckbox.parentNode.classList.remove("hidden-abs");
+            this.#reverseCheckbox.parentNode.classList.remove("hidden-abs");
         }
     }
 
@@ -189,8 +189,8 @@ export class RoutePlanner {
         locationEl.remove();
 
         if (this.#routesWrapper.children.length === 2) {
-            this.#reverceCheckbox.parentNode.classList.add("hidden-abs");
-            this.#reverceCheckbox.checked = false;
+            this.#reverseCheckbox.parentNode.classList.add("hidden-abs");
+            this.#reverseCheckbox.checked = false;
         }
     }
 
@@ -198,8 +198,8 @@ export class RoutePlanner {
     #onClearButtonClick(event) {
         this.#clearButton.disabled = true;
         this.#clearButton.classList.add("hidden-abs");
-        this.#reverceCheckbox.parentNode.classList.add("hidden-abs");
-        this.#reverceCheckbox.checked = false;
+        this.#reverseCheckbox.parentNode.classList.add("hidden-abs");
+        this.#reverseCheckbox.checked = false;
         this.#routesWrapper.querySelectorAll(".route-location").forEach((locationEl) => {
             locationEl.querySelector(".close-button").click();
         });

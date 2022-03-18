@@ -28,6 +28,11 @@ body {
   margin: 20px;
   display: inline-block;
 }
+body .save-in-progress {
+  opacity: 0.5;
+  pointer-events: none;
+  tab-index: -1;
+}
 body #attempt {
   margin: 20px 0;
 }

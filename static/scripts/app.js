@@ -108,21 +108,16 @@ export class App {
         this.#btnSaveNothings.addEventListener("click", (event) => {
             this.#btnSaveNothings.disabled = true;
             this.#getCurrentTabEl(`input[name=Nothings]`).value++;
-
-            this.#postData().then(() => {
-                window.onbeforeunload = () => {};
-                window.location.reload();
-            });
+            this.#saveConfig();
         });
 
         this.#btnSave.addEventListener("click", (event) => {
             this.#btnSave.disabled = true;
             this.#checkOnlyDeathAndAddNothingsIfItIs();
-            this.#postData().then(() => {
-                window.onbeforeunload = () => {};
-                window.location.reload();
-            });
+            this.#saveConfig();
+
         });
+
 
         this.#btnReset.addEventListener("click", (event) => {
 
@@ -430,6 +425,19 @@ export class App {
 
     #initRoutePlanner() {
         this.#routePlanner = new RoutePlanner(this.#locationsList, document.querySelector(".route-planner-wrapper"));
+    }
+
+    #saveConfig() {
+        this.#elBody.classList.add("save-in-progress")
+        this.#postData().then(() => {
+            this.#onConfigSaved();
+        });
+    }
+
+
+    #onConfigSaved() {
+        window.onbeforeunload = () => {};
+        window.location.reload();
     }
 
 }
