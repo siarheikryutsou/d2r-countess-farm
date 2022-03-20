@@ -75,5 +75,4 @@ export class Tabs extends EventTarget {
         this._buttons[value].click();
     }
 
-
 }

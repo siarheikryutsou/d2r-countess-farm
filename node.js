@@ -20,7 +20,16 @@ const requestListener = (req, res) => {
         });
 
         req.on("end", () => {
-            updateConfig(body);
+            switch (req.url) {
+                case "/save": {
+                    updateConfig(body);
+                    break;
+                }
+                case "/save_router_state": {
+                    updateRouterState(body);
+                    break;
+                }
+            }
             res.writeHead(200, {"Content-Type": "text/html"});
             res.end("Success");
         });
@@ -154,6 +163,23 @@ const updateConfig = (requestBody) => {
             });
     });
 };
+
+
+const updateRouterState = (requestBody) => {
+    const requestJson = JSON.parse(requestBody);
+    const currentConfigJson = JSON.parse(configFile.toString());
+
+    currentConfigJson.routePlanner = requestJson;
+    currentConfigJson.tabIndex = requestJson.activeLocationIndex;
+
+    fs.writeFile(configFileName, JSON.stringify(currentConfigJson)).then(() => {
+        fs.readFile(configFileName)
+            .then((contents) => {
+                configFile = contents;
+            });
+    });
+
+}
 
 const readHtml = () => {
     if (indexFile) return;

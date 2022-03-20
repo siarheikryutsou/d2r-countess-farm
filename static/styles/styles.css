@@ -28,10 +28,9 @@ body {
   margin: 20px;
   display: inline-block;
 }
-body .save-in-progress {
+body.save-in-progress {
   opacity: 0.5;
   pointer-events: none;
-  tab-index: -1;
 }
 body #attempt {
   margin: 20px 0;
@@ -135,8 +134,9 @@ body .set-color {
 .route-planner-wrapper .reverse-wrapper label {
   display: inline;
 }
-.route-planner-wrapper #clear-router {
-  display: block;
+.route-planner-wrapper #clear-router,
+.route-planner-wrapper #start-router {
+  display: inline-block;
 }
 .route-planner-wrapper select,
 .route-planner-wrapper .route-location {

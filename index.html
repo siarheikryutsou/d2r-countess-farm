@@ -18,7 +18,7 @@
                 <label for="keys">Ключей</label>
                 <div class="input-wrapper">
                     <input type="number" id="keys" name="Keys" data-norune="true">
-                    <img src="static/img/Key.png"/>
+                    <img alt="" src="static/img/Key.png"/>
                 </div>
             </div>
         </div>
@@ -29,7 +29,7 @@
                 <div class="input-wrapper">
                     <input type="number" id="andarielessence" name="AndarielEssence" data-norune="true"
                            data-essence="true">
-                    <img src="static/img/essence_andariel.png"/>
+                    <img alt="" src="static/img/essence_andariel.png"/>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
                 <div class="input-wrapper">
                     <input type="number" id="mephistoessence" name="MephistoEssence" data-norune="true"
                            data-essence="true">
-                    <img src="static/img/essence_mephisto.png"/>
+                    <img alt="" src="static/img/essence_mephisto.png"/>
                 </div>
             </div>
         </div>
@@ -50,7 +50,7 @@
                 <label for="diabloessence">Эссенций</label>
                 <div class="input-wrapper">
                     <input type="number" id="diabloessence" name="DiabloEssence" data-norune="true" data-essence="true">
-                    <img src="static/img/essence_diablo.png"/>
+                    <img alt="" src="static/img/essence_diablo.png"/>
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@
                 <label for="baalessence">Эссенций</label>
                 <div class="input-wrapper">
                     <input type="number" id="baalessence" name="BaalEssence" data-norune="true" data-essence="true">
-                    <img src="static/img/essence_baal.png"/>
+                    <img alt="" src="static/img/essence_baal.png"/>
                 </div>
             </div>
         </div>
@@ -70,7 +70,7 @@
                 <label for="nothing">Ничего</label>
                 <div class="input-wrapper">
                     <input type="number" id="nothing" name="Nothings" data-norune="true">
-                    <img src="static/img/Nothings.png"/>
+                    <img alt="" src="static/img/Nothings.png"/>
                 </div>
             </div>
         </div>
@@ -80,7 +80,7 @@
                 <label for="me">Смертей моих</label>
                 <div class="input-wrapper">
                     <input type="number" id="me" name="DeathsMe" data-norune="true">
-                    <img src="static/img/Death.png"/>
+                    <img alt="" src="static/img/Death.png"/>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
                 <label for="mercenary">Смертей мерка</label>
                 <div class="input-wrapper">
                     <input type="number" id="mercenary" name="Deaths" data-norune="true">
-                    <img src="static/img/Death.png"/>
+                    <img alt="" src="static/img/Death.png"/>
                 </div>
             </div>
         </div>
@@ -100,7 +100,7 @@
                 <label for="skillers">Скиллеров</label>
                 <div class="input-wrapper">
                     <input type="number" id="skillers" name="Skillers" data-norune="true">
-                    <img src="static/img/GrandCharm.png"/>
+                    <img alt="" src="static/img/GrandCharm.png"/>
                 </div>
             </div>
         </div>
@@ -110,14 +110,14 @@
                 <label for="charms">Норм чарм</label>
                 <div class="input-wrapper">
                     <input type="number" id="charms" name="Charms" data-norune="true">
-                    <img src="static/img/GrandCharm.png"/>
+                    <img alt="" src="static/img/GrandCharm.png"/>
                 </div>
             </div>
         </div>
 
         <div class="col">
             <div class="row">
-                <label for="uniques"><span class="uniques-color">Уников</label>
+                <label for="uniques"><span class="uniques-color">Уников</span></label>
                 <div class="input-wrapper">
                     <input type="number" id="uniques" name="Uniques" data-norune="true">
                 </div>
@@ -156,7 +156,10 @@
         <input type="checkbox" id="reverce-checkbox">
         <label for="reverce-checkbox">Reverse route</label>
     </div>
-    <button class="hidden-abs" type="button" id="clear-router" disabled>Clear route planner</button>
+    <div class="buttons-wrapper">
+        <button class="hidden-abs" type="button" id="start-router" disabled>Start Router</button>
+        <button class="hidden-abs" type="button" id="clear-router" disabled>Clear route planner</button>
+    </div>
 </div>
 
 <script src="static/scripts/app.js" type="module"></script>

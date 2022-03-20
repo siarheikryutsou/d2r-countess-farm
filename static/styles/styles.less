@@ -32,10 +32,9 @@ body {
 
   display: inline-block;
 
-  .save-in-progress {
+  &.save-in-progress {
     opacity: 0.5;
     pointer-events: none;
-    tab-index: -1;
   }
 
   #attempt {
@@ -168,8 +167,8 @@ body {
     }
   }
 
-  #clear-router {
-    display: block;
+  #clear-router, #start-router {
+    display: inline-block;
   }
 
   select, .route-location {
