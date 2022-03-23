@@ -1,3 +1,7 @@
+@font-face {
+  font-family: d2font;
+  src: url('/static/fonts/font.ttf');
+}
 html,
 body {
   padding: 0;
@@ -5,17 +9,31 @@ body {
 html {
   margin: 0;
   box-sizing: border-box;
-  font-family: sans-serif;
+}
+.hidden {
+  visibility: hidden;
+}
+.hidden-abs {
+  display: none !important;
+}
+body,
+button,
+input,
+select {
+  font-size: 16px;
+  font-family: d2font, sans-serif;
+  word-spacing: 0.4rem;
 }
 body {
   margin: 20px;
   display: inline-block;
 }
+body.save-in-progress {
+  opacity: 0.5;
+  pointer-events: none;
+}
 body #attempt {
   margin: 20px 0;
-}
-body .hidden {
-  visibility: hidden;
 }
 body label,
 body input {
@@ -34,19 +52,18 @@ body .cols-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
 }
-body .cols-wrapper.deaths {
+body .cols-wrapper.top {
   padding: 0;
+  width: 100%;
 }
-body .cols-wrapper.deaths .col {
+body .cols-wrapper.top .col {
   padding: 10px 20px;
-  border-bottom: 0;
 }
 body .col {
   padding: 10px 20px;
   border: 1px solid gray;
-}
-body .col:not(:first-child) {
-  margin-left: -1px;
+  margin-right: -1px;
+  margin-top: -1px;
 }
 body input[type="number"] {
   width: 50px;
@@ -70,5 +87,102 @@ body .input-wrapper {
 body .input-wrapper img {
   margin-left: 5px;
   height: 35px;
+}
+body .uniques-color {
+  color: #796320;
+}
+body .set-color {
+  color: #4cd016;
+}
+#tab-buttons-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+  font-size: 0;
+}
+#tab-buttons-wrapper button {
+  margin: 0;
+  border-radius: 0;
+  border: 1px solid gray;
+  margin: -0.5px -0.5px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+#tab-buttons-wrapper button:hover {
+  background-color: #ddd;
+}
+#tab-buttons-wrapper button[disabled] {
+  background-color: #5a5a5a;
+  opacity: 1;
+  color: white;
+}
+.route-planner-wrapper {
+  padding: 0 20px 20px 20px;
+  border: 1px solid grey;
+  margin-top: 30px;
+}
+.route-planner-wrapper .routes-wrapper {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+.route-planner-wrapper .routes-wrapper > *:not(:last-child) {
+  margin-right: 15px;
+}
+.route-planner-wrapper .reverse-wrapper {
+  display: block;
+}
+.route-planner-wrapper .reverse-wrapper input,
+.route-planner-wrapper .reverse-wrapper label {
+  display: inline;
+}
+.route-planner-wrapper #clear-router,
+.route-planner-wrapper #start-router {
+  display: inline-block;
+}
+.route-planner-wrapper select,
+.route-planner-wrapper .route-location {
+  padding: 10px 10px;
+  margin-bottom: 20px;
+}
+.route-planner-wrapper .route-location {
+  border: 1px solid grey;
+  border-radius: 5px;
+  cursor: move;
+  user-select: none;
+  background: #e6fffd;
+  box-sizing: border-box;
+  position: relative;
+}
+.route-planner-wrapper .route-location.active {
+  background-color: #e6ffbc;
+}
+.route-planner-wrapper .route-location.drag-enter {
+  border: 1px dashed grey;
+}
+.route-planner-wrapper .route-location .close-button {
+  position: absolute;
+  right: -10px;
+  top: -10px;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 1px solid grey;
+  cursor: pointer;
+}
+.route-planner-wrapper .route-location .close-button:before,
+.route-planner-wrapper .route-location .close-button:after {
+  position: absolute;
+  left: 10px;
+  top: 4px;
+  content: ' ';
+  height: 12px;
+  width: 1px;
+  background-color: #333;
+}
+.route-planner-wrapper .route-location .close-button:before {
+  transform: rotate(45deg);
+}
+.route-planner-wrapper .route-location .close-button:after {
+  transform: rotate(-45deg);
 }
 /*# sourceMappingURL=styles.css.map */
