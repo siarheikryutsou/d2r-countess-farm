@@ -5,6 +5,7 @@
 
 html, body {
   padding: 0;
+
 }
 
 html {
@@ -14,6 +15,10 @@ html {
 
 .hidden {
   visibility: hidden;
+}
+
+.half-opacity {
+  opacity: 0.5;
 }
 
 .hidden-abs {
@@ -142,6 +147,11 @@ body {
       background-color: #5a5a5a;
       opacity: 1;
       color: white;
+      pointer-events: none;
+    }
+
+    &.disabled-by-router {
+      opacity: .5;
     }
   }
 }
@@ -162,6 +172,7 @@ body {
 
   .reverse-wrapper {
     display: block;
+
     input, label {
       display: inline;
     }
@@ -179,11 +190,15 @@ body {
   .route-location {
     border: 1px solid grey;
     border-radius: 5px;
-    cursor: move;
+
     user-select: none;
     background: #e6fffd;
     box-sizing: border-box;
     position: relative;
+
+    &[draggable=true] {
+      cursor: move;
+    }
 
     &.active {
       background-color: #e6ffbc

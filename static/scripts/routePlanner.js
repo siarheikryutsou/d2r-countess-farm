@@ -1,7 +1,6 @@
 export class RoutePlanner extends EventTarget {
 
     #locationsList;
-    #storage;
     #wrapper;
     #dragEl;
     #select;
@@ -11,8 +10,11 @@ export class RoutePlanner extends EventTarget {
     #startButton;
     #dragHandlers = {};
     #isStarted = false;
+    #data;
+    #currentRouteIndex = 0;
+    #isGoingBack = false;
 
-    constructor(locationsList, wrapper = document.querySelector("body")) {
+    constructor(locationsList, wrapper = document.querySelector("body"), data = null) {
         super();
         this.#wrapper = wrapper;
         this.#routesWrapper = this.#wrapper.querySelector(".routes-wrapper");
@@ -20,20 +22,14 @@ export class RoutePlanner extends EventTarget {
         this.#clearButton = wrapper.querySelector("#clear-router");
         this.#startButton = wrapper.querySelector("#start-router");
         this.#locationsList = locationsList;
-        this.#storage = window.sessionStorage;
 
-        this.#storage?.getItem("route") ? this.#initBuilt() : this.#buildNew();
-
+        this.#data = data;
+        this.#build();
         this.#wrapper.classList.remove("hidden");
     }
 
 
-    #initBuilt() {
-
-    }
-
-
-    #buildNew() {
+    #build() {
         const select = this.#select = document.createElement("select");
         const defaultOption = document.createElement("option");
 
@@ -56,6 +52,31 @@ export class RoutePlanner extends EventTarget {
         this.#startButton.addEventListener("click", this.#onStartButtonClick.bind(this));
 
         this.#routesWrapper.append(select);
+
+        if (this.#data) {
+            this.#isStarted = true;
+            this.#isGoingBack = this.#data.isGoingBack || false;
+            const activeLocationName = this.#locationsList[this.#data.activeLocationIndex]
+
+            this.#data.locationsOrder.forEach((location, index) => {
+                const locationEl = this.#addLocation(location);
+                locationEl.draggable = false;
+                locationEl.querySelector(".close-button").classList.add("hidden-abs");
+
+                this.#select.options.namedItem(`option-${location}`).disabled = true;
+                if (location === activeLocationName) {
+                    locationEl.classList.add("active");
+                    this.#currentRouteIndex = index;
+                }
+            });
+
+
+            this.#startButton.disabled = true;
+            this.#select.disabled = true;
+            this.#reverseCheckbox.disabled = true;
+            this.#reverseCheckbox.checked = this.#data.reverse;
+            this.#reverseCheckbox.labels[0].classList.add("half-opacity");
+        }
     }
 
 
@@ -119,6 +140,8 @@ export class RoutePlanner extends EventTarget {
             this.#startButton.classList.remove("hidden-abs");
             this.#startButton.disabled = false;
         }
+
+        return locationEl;
     }
 
 
@@ -198,7 +221,7 @@ export class RoutePlanner extends EventTarget {
         if (this.#routesWrapper.children.length === 2) {
             this.#reverseCheckbox.parentNode.classList.add("hidden-abs");
             this.#startButton.classList.add("hidden-abs");
-            this.#reverseCheckbox.checked = true;
+            //this.#reverseCheckbox.checked = true;
         }
     }
 
@@ -209,17 +232,35 @@ export class RoutePlanner extends EventTarget {
         this.#startButton.disabled = true;
         this.#startButton.classList.add("hidden-abs");
         this.#reverseCheckbox.parentNode.classList.add("hidden-abs");
+        this.#reverseCheckbox.disabled = false;
         this.#reverseCheckbox.checked = false;
+        this.#reverseCheckbox.labels[0].classList.remove("half-opacity");
+        this.#select.disabled = false;
+        this.#currentRouteIndex = 0;
+
         this.#getRouteElsList().forEach((locationEl) => {
             locationEl.querySelector(".close-button").click();
         });
+        this.#isStarted = false;
+        this.dispatchEvent(new Event("ClearRouter"));
     }
 
 
     #onStartButtonClick(event) {
+        const routeElList = this.#getRouteElsList();
         this.#startButton.disabled = true;
-        this.#getRouteElsList()[0].classList.add("active");
+        this.#reverseCheckbox.disabled = true;
+        this.#reverseCheckbox.labels[0].classList.add("half-opacity");
+
+        routeElList[this.#currentRouteIndex].classList.add("active");
+        routeElList.forEach((routeEl) => {
+            routeEl.querySelector(".close-button").classList.add("hidden-abs");
+            routeEl.draggable = false;
+        });
+
         this.#isStarted = true;
+        this.#select.disabled = true;
+
         this.dispatchEvent(new Event("StartRouter"));
     }
 
@@ -229,10 +270,15 @@ export class RoutePlanner extends EventTarget {
     }
 
 
+    #getActiveLocationEl() {
+        return this.#routesWrapper.querySelector(".route-location.active");
+    }
+
+
     getActiveLocationIndex() {
-        const activeLocationEl = this.#routesWrapper.querySelector(".route-location.active");
-        const acitveLocationName = activeLocationEl.querySelector(".text-wrapper").textContent;
-        return this.#locationsList.indexOf(acitveLocationName);
+        const activeLocationEl = this.#getActiveLocationEl();
+        const activeLocationName = activeLocationEl.querySelector(".text-wrapper").textContent;
+        return this.#locationsList.indexOf(activeLocationName);
     }
 
 
@@ -250,10 +296,46 @@ export class RoutePlanner extends EventTarget {
         return {
             activeLocationIndex: this.getActiveLocationIndex(),
             locationsOrder: routesList,
-            reverse: this.#reverseCheckbox.checked
-
+            reverse: this.#reverseCheckbox.checked,
+            isGoingBack: this.#isGoingBack
         }
     }
 
+    routeCompleted() {
+        //console.log("routeCompleted()")
+        const prevLocationEl = this.#getActiveLocationEl();
+        let nextLocationEl;
+        const routeElsList = this.#getRouteElsList();
+        const routesCount = routeElsList.length;
 
+        if (this.#isGoingBack) {
+            console.log(">>> isGoingBack");
+            this.#currentRouteIndex--;
+            if (this.#currentRouteIndex < 0) {
+                this.#isGoingBack = false;
+                this.#currentRouteIndex = 0;
+            }
+        } else {
+            console.log(">>> isGoingForward");
+            this.#currentRouteIndex++;
+            if (this.#currentRouteIndex === routesCount) {
+                if (this.#reverseCheckbox.checked) {
+                    this.#isGoingBack = true;
+                    this.#currentRouteIndex = routesCount - 1;
+                } else {
+                    this.#currentRouteIndex = 0;
+                }
+            }
+        }
+
+        nextLocationEl = routeElsList[this.#currentRouteIndex];
+
+        if (prevLocationEl !== nextLocationEl) {
+            prevLocationEl.classList.remove("active");
+            nextLocationEl.classList.add("active");
+        }
+
+        this.dispatchEvent(new Event("RouteComplete"));
+
+    }
 }
