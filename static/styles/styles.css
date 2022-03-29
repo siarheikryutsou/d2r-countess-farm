@@ -1,10 +1,7 @@
-@font-face {
-  font-family: d2font;
-  src: url('/static/fonts/font.ttf');
-}
 html,
 body {
   padding: 0;
+  font-family: sans-serif;
 }
 html {
   margin: 0;
@@ -24,8 +21,6 @@ button,
 input,
 select {
   font-size: 16px;
-  font-family: d2font, sans-serif;
-  word-spacing: 0.4rem;
 }
 body {
   margin: 20px;
@@ -51,16 +46,15 @@ body .row {
 body .row.deaths {
   margin: 0;
 }
+body #countess-top-inputs-wrapper game-item {
+  padding: 10px 20px;
+  border: 1px solid gray;
+  margin-right: -1px;
+  margin-top: -1px;
+}
 body .cols-wrapper {
   display: inline-flex;
   flex-wrap: wrap;
-}
-body .cols-wrapper.top {
-  padding: 0;
-  width: 100%;
-}
-body .cols-wrapper.top .col {
-  padding: 10px 20px;
 }
 body .col {
   padding: 10px 20px;
@@ -126,6 +120,7 @@ body .set-color {
   padding: 0 20px 20px 20px;
   border: 1px solid grey;
   margin-top: 30px;
+  display: inline-block;
 }
 .route-planner-wrapper .routes-wrapper {
   display: inline-flex;
