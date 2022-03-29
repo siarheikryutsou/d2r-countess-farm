@@ -1,11 +1,6 @@
-@font-face {
-  font-family: d2font;
-  src: url('/static/fonts/font.ttf');
-}
-
 html, body {
   padding: 0;
-
+  font-family: sans-serif;
 }
 
 html {
@@ -27,8 +22,6 @@ html {
 
 body, button, input, select {
   font-size: 16px;
-  font-family: d2font, sans-serif;
-  word-spacing: 0.4rem;
 }
 
 
@@ -62,18 +55,19 @@ body {
     }
   }
 
+  #countess-top-inputs-wrapper {
+    game-item {
+      padding: 10px 20px;
+      border: 1px solid gray;
+      margin-right: -1px;
+      margin-top: -1px;
+    }
+  }
+
+
   .cols-wrapper {
     display: inline-flex;
     flex-wrap: wrap;
-
-    &.top {
-      padding: 0;
-      width: 100%;
-
-      .col {
-        padding: 10px 20px;
-      }
-    }
   }
 
   .col {
@@ -160,6 +154,7 @@ body {
   padding: 0 20px 20px 20px;
   border: 1px solid grey;
   margin-top: 30px;
+  display: inline-block;
 
   .routes-wrapper {
     display: inline-flex;

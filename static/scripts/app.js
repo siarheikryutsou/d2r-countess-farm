@@ -1,5 +1,6 @@
 import {Tabs} from "./tabs.js";
 import {RoutePlanner} from "./routePlanner.js";
+import {GameItemEl} from "./GameItemEl.js";
 
 export class App {
     #elBody = null;
@@ -51,52 +52,6 @@ export class App {
     };
 
 
-    #initTabs() {
-        const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
-        const tabsWrapper = document.querySelector("#tabs-wrapper");
-        const tabContentsTemplate = document.querySelector("#content-template");
-
-
-        for (let locationName in this.#config) {
-            const button = document.createElement("button");
-            const tabWrapper = document.createElement("div");
-            const tabContent = tabContentsTemplate.content.cloneNode(true);
-
-            button.textContent = locationName;
-            tabWrapper.classList.add("tab");
-            tabWrapper.id = locationName.toLowerCase() + "-wrapper";
-            tabWrapper.appendChild(tabContent);
-
-            tabButtonsWrapper.append(button);
-            tabsWrapper.append(tabWrapper);
-
-            this.#initTabContent(tabWrapper, this.#config[locationName], locationName);
-        }
-
-        const tabButtonsList = document.querySelectorAll("#tab-buttons-wrapper button");
-        const tabElsList = document.querySelectorAll("#tabs-wrapper .tab");
-
-        const tabs = this.#tabs = new Tabs(tabButtonsList, tabElsList, this.#currentTabIndex);
-        this.#currentTabEl = tabElsList[tabs.activeTabIndex];
-
-        tabs.addEventListener("change", (event) => {
-            if (this.#hasChanges()) {
-                if (confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
-                    this.#removeChanges();
-                } else {
-                    event.preventDefault();
-                }
-            }
-        });
-
-        tabs.addEventListener("changed", (event) => {
-            const tabIndex = this.#currentTabIndex = tabs.activeTabIndex;
-            this.#configCurrentSection = this.#config[this.#locationsList[tabIndex]];
-            this.#currentTabEl = tabElsList[tabIndex];
-        });
-    }
-
-
     #init() {
         this.#locationsList = Object.keys(this.#config);
         this.#configCurrentSection = this.#config[this.#getCurrentLocationName()];
@@ -107,6 +62,7 @@ export class App {
         this.#btnSave.disabled = true;
         this.#btnSave.style.display = "none";
 
+        this.#fillItems();
         this.#fillRunes();
 
         this.#btnSaveNothings.addEventListener("click", (event) => {
@@ -140,6 +96,99 @@ export class App {
     }
 
 
+    #fillItems() {
+        const inputsList = ["Nothings", "DeathsMe", "Deaths", "Keys", "AndarielEssence", "MephistoEssence", "DiabloEssence", "BaalEssence", "Skillers", "Charms", "Uniques", "Sets", "Rare", "Bases", "Magic", "Jewels"];
+        const templateEl = document.querySelector("#content-template").content;
+        const inputsWrapper = templateEl.querySelector("#top-inputs-wrapper");
+        const inputsElListByName = {};
+
+        for (let i = 0, len = inputsList.length; i < len; i++) {
+            const inputTypeName = inputsList[i];
+            const inputEl = new GameItemEl(false, inputTypeName);
+            inputEl.classList.add("col");
+            inputsElListByName[inputTypeName] = inputEl;
+            inputsWrapper.append(inputEl);
+        }
+
+        inputsElListByName["Keys"].classList.add("keys");
+        //TODO: maybe need to remove bossname+essence class
+        inputsElListByName["AndarielEssence"].classList.add("andarielessence", "essence");
+        inputsElListByName["MephistoEssence"].classList.add("mephistoessence", "essence");
+        inputsElListByName["DiabloEssence"].classList.add("diabloessence", "essence");
+        inputsElListByName["BaalEssence"].classList.add("baalessence", "essence");
+
+
+    }
+
+
+    #fillRunes() {
+        const templateEl = document.querySelector("#content-template").content;
+        let runesWrapper = templateEl.querySelector("#runes-wrapper");
+        let col;
+        let elRunesWrapper;
+
+
+        for (let i = 0, len = this.#runesList.length; i < len; i++) {
+            const runeName = this.#runesList[i];
+            const runeEl = new GameItemEl(true, runeName);
+
+            if (i === 0 || i % 5 === 0) {
+                col = this.#createRunesCol();
+                runesWrapper.append(col);
+                elRunesWrapper = col.querySelector(".runes-list-wrapper");
+            }
+
+            elRunesWrapper.append(runeEl);
+        }
+    }
+
+
+    #initTabs() {
+        const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
+        const tabsWrapper = document.querySelector("#tabs-wrapper");
+        const tabContentsTemplate = document.querySelector("#content-template");
+
+
+        for (let locationName in this.#config) {
+            const button = document.createElement("button");
+            const tabWrapper = document.createElement("div");
+            const tabContent = tabContentsTemplate.content.cloneNode(true);
+
+            button.textContent = locationName;
+            tabWrapper.classList.add("tab");
+            tabWrapper.id = locationName.toLowerCase() + "-wrapper";
+            tabWrapper.append(tabContent);
+
+            tabButtonsWrapper.append(button);
+            tabsWrapper.append(tabWrapper);
+
+            this.#initTabContent(tabWrapper, this.#config[locationName], locationName);
+        }
+
+        const tabButtonsList = document.querySelectorAll("#tab-buttons-wrapper button");
+        const tabElsList = document.querySelectorAll("#tabs-wrapper .tab");
+
+        const tabs = this.#tabs = new Tabs(tabButtonsList, tabElsList, this.#currentTabIndex);
+        this.#currentTabEl = tabElsList[tabs.activeTabIndex];
+
+        tabs.addEventListener("change", (event) => {
+            if (this.#hasChanges()) {
+                if (confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
+                    this.#removeChanges();
+                } else {
+                    event.preventDefault();
+                }
+            }
+        });
+
+        tabs.addEventListener("changed", (event) => {
+            const tabIndex = this.#currentTabIndex = tabs.activeTabIndex;
+            this.#configCurrentSection = this.#config[this.#locationsList[tabIndex]];
+            this.#currentTabEl = tabElsList[tabIndex];
+        });
+    }
+
+
     #backupCurrentConfig = async () => {
         //console.log("Делаем бекап");
         await fetch("/backup");
@@ -165,20 +214,25 @@ export class App {
             tab.querySelector(`[for=${lastId}]`)?.setAttribute("for", newId);
         });
 
+
         tab.querySelector(".attempt").textContent += locationName + " #" + data.Attempt;
         tab.querySelector(".last-save").textContent += this.#lastSaveInfo;
 
-        const inputMe = tab.querySelector(`#${idPrefix}me`);
-        const inputMercenary = tab.querySelector(`#${idPrefix}mercenary`);
+        const inputMe = tab.querySelector(`#${idPrefix}deathsme`);
+        const inputMercenary = tab.querySelector(`#${idPrefix}deaths`);
         const inputsList = tab.querySelectorAll("input[type=number]");
         const elColKeys = tab.querySelector(".col.keys");
         const inputKeys = tab.querySelector(`#${idPrefix}keys`);
-        const inputNothing = tab.querySelector(`#${idPrefix}nothing`);
+        const inputNothing = tab.querySelector(`#${idPrefix}nothings`);
         const inputSkillers = tab.querySelector(`#${idPrefix}skillers`);
         const inputCharms = tab.querySelector(`#${idPrefix}charms`);
         const inputUniques = tab.querySelector(`#${idPrefix}uniques`);
         const inputSets = tab.querySelector(`#${idPrefix}sets`);
-        const essencesElList = tab.querySelectorAll("[data-essence=true]");
+        const inputRare = tab.querySelector(`#${idPrefix}rare`);
+        const inputBases = tab.querySelector(`#${idPrefix}bases`);
+        const inputMagic = tab.querySelector(`#${idPrefix}magic`);
+        const inputJewels = tab.querySelector(`#${idPrefix}jewels`);
+        const essencesElList = tab.querySelectorAll("game-item.essence");
 
         inputMe.value = inputMe.min = data.DeathsMe.toString();
         inputMe.max = (data.DeathsMe + 1).toString();
@@ -202,12 +256,17 @@ export class App {
         inputCharms.value = inputCharms.min = data.Charms.toString();
         inputUniques.value = inputUniques.min = data.Uniques.toString();
         inputSets.value = inputSets.min = data.Sets.toString();
+        inputRare.value = inputRare.min = data.Rare.toString();
+        inputBases.value = inputBases.min = data.Bases.toString();
+        inputMagic.value = inputMagic.min = data.Magic.toString();
+        inputJewels.value = inputJewels.min = data.Jewels.toString();
 
         essencesElList.forEach((el) => {
-            el.value = el.min = data[el.name];
+            const input = el.querySelector("input");
+            input.value = input.min = data[input.name];
 
-            if (el.name.split("Essence")[0] !== locationName) {
-                tab.querySelector(`.col.${el.name.toLowerCase()}`).style.display = "none";
+            if (input.name.split("Essence")[0] !== locationName) {
+                tab.querySelector(`.col.${input.name.toLowerCase()}`).style.display = "none";
             }
         });
 
@@ -224,6 +283,7 @@ export class App {
         }
     }
 
+
     #onInputChanged(event) {
         const changed = this.#hasChanges();
         if (changed) {
@@ -239,9 +299,9 @@ export class App {
 
     #checkOnlyDeathAndAddNothingsIfItIs() {
         const currentLocation = this.#getCurrentLocationName().toLowerCase();
-        const changeNodeds = this.#changesWrapper.childNodes;
+        const changeNoDeaths = this.#changesWrapper.childNodes;
         const deaths = this.#changesWrapper.querySelectorAll(`[data-el-id=${currentLocation}-me], [data-el-id=${currentLocation}-mercenary]`);
-        if (deaths?.length === changeNodeds?.length) {
+        if (deaths?.length === changeNoDeaths?.length) {
             //only death changed, add nothing
             this.#getCurrentTabEl("[name=Nothings]").value++;
         }
@@ -306,50 +366,6 @@ export class App {
     }
 
 
-    #fillRunes() {
-        const templateEl = document.querySelector("#content-template").content;
-        let runesWrapper = templateEl.querySelector(".runes-wrapper");
-        let col;
-        let elRunesWrapper;
-
-
-        for (let i = 0, j = 0, len = this.#runesList.length; i < len; i++) {
-            const runeName = this.#runesList[i];
-            const runeNameToLowerCase = runeName.toLowerCase();
-            const elRow = document.createElement("div");
-            const elLabel = document.createElement("label");
-            const wrapperEl = document.createElement("div");
-            const elInput = document.createElement("input");
-            const elImg = document.createElement("img");
-
-            if (i === 0 || i % 5 === 0) {
-                col = this.#createRunesCol();
-                runesWrapper.append(col);
-                elRunesWrapper = col.querySelector(".runes-list-wrapper");
-            }
-
-            elLabel.setAttribute("for", runeNameToLowerCase);
-            elLabel.textContent = runeName;
-
-            elInput.type = "number";
-            elInput.id = runeNameToLowerCase;
-            elInput.name = runeName;
-            elImg.src = "static/img/" + runeName + ".png";
-            wrapperEl.classList.add("input-wrapper");
-
-            elRow.appendChild(elLabel);
-            elRow.appendChild(wrapperEl);
-            wrapperEl.appendChild(elInput);
-            wrapperEl.appendChild(elImg);
-
-            elRow.classList.add("row");
-
-            elRunesWrapper.appendChild(elRow);
-        }
-
-    }
-
-
     #createRunesCol() {
         const col = document.createElement("div");
         const content = document.createElement("div");
@@ -386,6 +402,10 @@ export class App {
                 Charms: parseInt(this.#getCurrentTabEl(`input[name=Charms]`).value),
                 Uniques: parseInt(this.#getCurrentTabEl(`input[name=Uniques]`).value),
                 Sets: parseInt(this.#getCurrentTabEl(`input[name=Sets]`).value),
+                Rare: parseInt(this.#getCurrentTabEl(`input[name=Rare]`).value),
+                Bases: parseInt(this.#getCurrentTabEl(`input[name=Bases]`).value),
+                Magic: parseInt(this.#getCurrentTabEl(`input[name=Magic]`).value),
+                Jewels: parseInt(this.#getCurrentTabEl(`input[name=Jewels]`).value),
                 AndarielEssence: parseInt(this.#getCurrentTabEl(`input[name=AndarielEssence]`).value),
                 MephistoEssence: parseInt(this.#getCurrentTabEl(`input[name=MephistoEssence]`).value),
                 DiabloEssence: parseInt(this.#getCurrentTabEl(`input[name=DiabloEssence]`).value),
