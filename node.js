@@ -20,18 +20,21 @@ const requestListener = (req, res) => {
 		});
 
 		req.on("end", () => {
+			let handler;
 			switch (req.url) {
 				case "/save": {
-					updateConfig(body);
+					handler = updateConfig;
 					break;
 				}
 				case "/save_router_state": {
-					updateRouterState(body);
+					handler = updateRouterState;
 					break;
 				}
 			}
-			res.writeHead(200, {"Content-Type": "text/html"});
-			res.end("Success");
+			handler(body).then(() => {
+				res.writeHead(200, {"Content-Type": "text/html"});
+				res.end("Success");
+			});
 		});
 	} else if (req.method === "GET") {
 
@@ -145,7 +148,7 @@ const onNewConfigCreated = () => {
 	initConfig();
 };
 
-const updateConfig = (requestBody) => {
+const updateConfig = async (requestBody) => {
 	const requestBodyJson = JSON.parse(requestBody);
 	const currentConfigJson = JSON.parse(configFile.toString());
 	const date = new Date();
@@ -160,12 +163,13 @@ const updateConfig = (requestBody) => {
 			.then((contents) => {
 				configFile = contents;
 				writeResult(currentConfigJson);
+				return true;
 			});
 	});
 };
 
 
-const updateRouterState = (requestBody) => {
+const updateRouterState = async (requestBody) => {
 	const requestJson = JSON.parse(requestBody);
 	const currentConfigJson = JSON.parse(configFile.toString());
 
@@ -179,6 +183,7 @@ const updateRouterState = (requestBody) => {
 		fs.readFile(configFileName)
 			.then((contents) => {
 				configFile = contents;
+				return true;
 			});
 	});
 

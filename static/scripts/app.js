@@ -492,8 +492,9 @@ export class App {
 
     #saveRouterState = async (clear = false) => {
         //console.log("Save router data");
-        let data = clear ? null : this.#routePlanner.getStateData();
-        await fetch("/save_router_state", Object.assign(this.#postRequestOptions, {body: JSON.stringify(data)}));
+        const data = clear ? null : this.#routePlanner.getStateData();
+        const request = Object.assign(this.#postRequestOptions, {body: JSON.stringify(data)});
+        await fetch("/save_router_state", request);
     }
 
 
