@@ -30,9 +30,6 @@ body.save-in-progress {
   opacity: 0.5;
   pointer-events: none;
 }
-body #attempt {
-  margin: 20px 0;
-}
 body label,
 body input {
   display: block;

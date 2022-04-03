@@ -8,15 +8,16 @@
 <body class="hidden">
 
 <template id="content-template">
-    <h2 class="attempt">Забег на </h2>
-    <h5 class="last-save">Последняя запись: </h5>
     <div id="top-inputs-wrapper" class="cols-wrapper top"></div>
     <div id="runes-wrapper" class="cols-wrapper runes-wrapper"></div>
 </template>
 
 <div id="tab-buttons-wrapper"></div>
+<div id="location-content-wrapper">
+    <h2 id="attempt-title"><span>Забег на </span><span id="attempt-title-location-text"></span></h2>
+    <h5 id="last-save-title"></h5>
 
-<div id="tabs-wrapper"></div>
+</div>
 
 <div class="controls">
     <button type="button" id="btnSave">Save</button>
@@ -39,6 +40,6 @@
     </div>
 </div>
 
-<script src="static/scripts/app.js" type="module"></script>
+<script src="static/scripts/App.js" type="module"></script>
 </body>
 </html>

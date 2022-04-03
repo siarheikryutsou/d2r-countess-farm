@@ -1,44 +1,50 @@
 export class GameItemEl extends HTMLElement {
 
-    constructor(isRune = false, itemName = "") {
+    #name;
+    #input;
+
+    constructor(isRune = false, name = "") {
         super();
 
-        if (this.children.length) {
-            //TODO: remove nahui
-            return
-        }
-
-        //TODO: think no need this wrapper; Check after all items will be moved to this
-        //const col = document.createElement("div");
         const label = document.createElement("label");
-        const inputWrapper = document.createElement("div");
-        const input = document.createElement("input");
+        const inputWrapper = document.createElement("div"); //TODO: think about remove this wrapper
+        const input = this.#input = document.createElement("input");
         const img = document.createElement("img");
-        const itemNameToLowerCase = itemName.toLowerCase();
+        const nameToLowerCase = name.toLowerCase();
 
-        //col.classList.add("row");
         inputWrapper.classList.add("input-wrapper");
 
-        label.textContent = itemName;
-        label.setAttribute("for", itemNameToLowerCase);
+        label.textContent = name;
+        label.setAttribute("for", nameToLowerCase);
 
         //input.value = ;
         input.type = "number";
-        input.id = itemNameToLowerCase;
-        input.name = itemName;
+        input.id = nameToLowerCase;
+        input.name = this.#name = name;
         if (!isRune) {
+            //TODO: think about remove it
             input.setAttribute("data-norune", "true");
         }
 
-        img.src = `static/img/${itemName}.png`;
+        img.src = `static/img/${name}.png`;
 
         inputWrapper.append(input);
         inputWrapper.append(img);
-        //col.append(label);
-        //col.append(inputWrapper);
         this.append(label, inputWrapper)
 
         return this;
+    }
+
+    get name() {
+        return this.#name;
+    }
+
+    get value() {
+        return parseInt(this.#input.value);
+    }
+
+    setData(value) {
+        this.#input.value = this.#input.min = value;
     }
 }
 

@@ -1,8 +1,8 @@
 export class Tabs extends EventTarget {
 
-    #buttons = null;
-    #tabEls = null;
-    #activeIndex = null;
+    #buttons;
+    #tabEls;
+    #activeIndex;
     #activeTabDisplayStyle;
 
     constructor(buttons, tabEls, activeIndex = 0, activeTabDisplayStyle = "block") {
@@ -16,7 +16,7 @@ export class Tabs extends EventTarget {
     }
 
     #init() {
-        for (let i = 0, len = this.#tabEls.length; i < len; i++) {
+        for (let i = 0, len = this.#buttons.length; i < len; i++) {
             if (i !== this.#activeIndex) {
                 this.#deactivateActiveTab(i);
             } else {
@@ -29,20 +29,25 @@ export class Tabs extends EventTarget {
 
 
     #activateTab(index = this.#activeIndex) {
-        this.#tabEls[index].style.display = this.#activeTabDisplayStyle;
+        if (this.#tabEls) {
+            this.#tabEls[index].style.display = this.#activeTabDisplayStyle;
+        }
         this.#buttons[index].disabled = true;
         this.#activeIndex = index;
     }
 
     #deactivateActiveTab(index = this.#activeIndex) {
-        this.#tabEls[index].style.display = "none";
+        if (this.#tabEls) {
+            this.#tabEls[index].style.display = "none";
+        }
         this.#buttons[index].disabled = false;
     }
 
 
     #onTabButtonClick(event) {
+        const button = event.currentTarget;
         const changeEvent = new Event("change", {bubbles: true, cancelable: true});
-        this.dispatchEvent(changeEvent);
+        button.parentNode.dispatchEvent(changeEvent);
         if (changeEvent.defaultPrevented) {
             return;
         }
@@ -51,7 +56,7 @@ export class Tabs extends EventTarget {
         this.#deactivateActiveTab();
         this.#activeIndex = index;
         this.#activateTab();
-        this.dispatchEvent(new Event("changed"));
+        button.parentNode.dispatchEvent(new Event("changed"));
     }
 
 
@@ -70,6 +75,11 @@ export class Tabs extends EventTarget {
 
     set activeTabIndex(value) {
         this.#buttons[value].click();
+    }
+
+
+    get node() {
+        return this.#buttons[0]
     }
 
     disable() {

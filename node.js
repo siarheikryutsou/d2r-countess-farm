@@ -9,7 +9,7 @@ const configDefaultFileName = "config_default.json";
 const resultFileName = "result.txt";
 const keysLocations = ["Countess", "Summoner", "Nihlathak"];
 const essencesLocations = ["Andariel", "Mephisto", "Diablo", "Baal"];
-
+const server = http.createServer(requestListener);
 let indexFile;
 let configFile;
 
@@ -105,7 +105,6 @@ const requestListener = (req, res) => {
     }
 };
 
-const server = http.createServer(requestListener);
 
 const initConfig = () => {
     fs.readFile(configFileName)
@@ -124,6 +123,7 @@ const initConfig = () => {
             }
         });
 };
+
 
 const createNewConfig = () => {
     readDefaultConfig().then((contents) => {
@@ -146,6 +146,7 @@ const onNewConfigCreated = () => {
     console.log("Config created");
     initConfig();
 };
+
 
 const updateConfig = (requestBody) => {
     const requestBodyJson = JSON.parse(requestBody);
@@ -185,6 +186,7 @@ const updateRouterState = (requestBody) => {
     });
 
 }
+
 
 const readHtml = () => {
     if (indexFile) return;

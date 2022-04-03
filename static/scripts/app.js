@@ -1,8 +1,11 @@
-import {Tabs} from "./tabs.js";
+import {Tabs} from "./Tabs.js";
 import {RoutePlanner} from "./routePlanner.js";
-import {GameItemEl} from "./GameItemEl.js";
+import {LocationContentEl} from "./LocationContentEl.js";
+import {ConfigModel} from "./ConfigModel.js";
+import {TabButtonsEl} from "./TabButtonsEl.js";
 
 export class App {
+    #configModel;
     #elBody = null;
     #btnSave = null;
     #btnSaveNothings = null;
@@ -14,7 +17,6 @@ export class App {
     #locationsList;
     #currentTabEl;
     #currentTabIndex;
-    #lastSaveInfo;
     #routePlanner;
     #tabs;
     #postRequestOptions = {method: "POST", headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}};
@@ -27,14 +29,16 @@ export class App {
     #onDomContentLoaded(event) {
         this.#requestConfig().then(() => {
             this.#init();
+
+            return
             this.#initTabs();
             this.#initRoutePlanner();
 
-            window.onbeforeunload = () => {
+            /*window.onbeforeunload = () => {
                 if (this.#hasChanges()) {
                     return "You have unsaved changes. Are you sure, you want to close?";
                 }
-            };
+            };*/
 
             this.#elBody = document.getElementsByTagName("body")[0];
             this.#elBody.classList.remove("hidden");
@@ -45,10 +49,10 @@ export class App {
     #requestConfig = async () => {
         const response = await fetch("/config");
         const data = await response.json();
+        this.#configModel = new ConfigModel(data);
         this.#currentTabIndex = data.tabIndex;
         this.#config = data.data;
         this.#routerData = data.routePlanner;
-        this.#lastSaveInfo = data.lastSave;
     };
 
 
@@ -62,8 +66,12 @@ export class App {
         this.#btnSave.disabled = true;
         this.#btnSave.style.display = "none";
 
-        this.#fillItems();
-        this.#fillRunes();
+        this.#buildLayout();
+        return;
+
+        //this.#fillItems();
+        //this.#fillRunes();
+        //this.#setLocationData();
 
         this.#btnSaveNothings.addEventListener("click", (event) => {
             this.#btnSaveNothings.disabled = true;
@@ -95,59 +103,45 @@ export class App {
         this.#changesWrapper = document.getElementById("changes-wrapper");
     }
 
+    #buildLayout() {
+        //TODO: think about remove wrappers and append all to the body
+        const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
+        const locationContentWrapper = document.querySelector("#location-content-wrapper");
+        const tabButtonsEl = new TabButtonsEl(this.#configModel);
+        const locationContentEl = new LocationContentEl(this.#configModel);
+        locationContentWrapper.append(locationContentEl);
+        tabButtonsWrapper.append(tabButtonsEl);
 
-    #fillItems() {
-        const inputsList = ["Nothings", "DeathsMe", "Deaths", "Keys", "AndarielEssence", "MephistoEssence", "DiabloEssence", "BaalEssence", "Skillers", "Charms", "Uniques", "Sets", "Rare", "Bases", "Magic", "Jewels"];
-        const templateEl = document.querySelector("#content-template").content;
-        const inputsWrapper = templateEl.querySelector("#top-inputs-wrapper");
-        const inputsElListByName = {};
-
-        for (let i = 0, len = inputsList.length; i < len; i++) {
-            const inputTypeName = inputsList[i];
-            const inputEl = new GameItemEl(false, inputTypeName);
-            inputEl.classList.add("col");
-            inputsElListByName[inputTypeName] = inputEl;
-            inputsWrapper.append(inputEl);
-        }
-
-        inputsElListByName["Keys"].classList.add("keys");
-        //TODO: maybe need to remove bossname+essence class
-        inputsElListByName["AndarielEssence"].classList.add("andarielessence", "essence");
-        inputsElListByName["MephistoEssence"].classList.add("mephistoessence", "essence");
-        inputsElListByName["DiabloEssence"].classList.add("diabloessence", "essence");
-        inputsElListByName["BaalEssence"].classList.add("baalessence", "essence");
-
-
-    }
-
-
-    #fillRunes() {
-        const templateEl = document.querySelector("#content-template").content;
-        let runesWrapper = templateEl.querySelector("#runes-wrapper");
-        let col;
-        let elRunesWrapper;
-
-
-        for (let i = 0, len = this.#runesList.length; i < len; i++) {
-            const runeName = this.#runesList[i];
-            const runeEl = new GameItemEl(true, runeName);
-
-            if (i === 0 || i % 5 === 0) {
-                col = this.#createRunesCol();
-                runesWrapper.append(col);
-                elRunesWrapper = col.querySelector(".runes-list-wrapper");
+        tabButtonsEl.addEventListener("change", (event) => {
+            console.log("change");
+            if (locationContentEl.hasChanges()) {
+                if (confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
+                    this.#removeChanges();
+                } else {
+                    event.preventDefault();
+                }
             }
+        });
 
-            elRunesWrapper.append(runeEl);
-        }
+        tabButtonsEl.addEventListener("changed", (event) => {
+            /*const tabIndex = this.#currentTabIndex = tabs.activeTabIndex;
+            this.#configCurrentSection = this.#config[this.#getCurrentLocationName()];
+            this.#currentTabEl = tabElsList[tabIndex];
+            this.#setLocationData();*/
+            this.#setLocationData();
+            locationContentEl.render();
+        });
+
+        this.#setLocationData();
+        locationContentEl.render();
+
     }
 
 
     #initTabs() {
-        const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
+        /*const tabButtonsWrapper = document.querySelector("#tab-buttons-wrapper");
         const tabsWrapper = document.querySelector("#tabs-wrapper");
         const tabContentsTemplate = document.querySelector("#content-template");
-
 
         for (let locationName in this.#config) {
             const button = document.createElement("button");
@@ -168,10 +162,10 @@ export class App {
         const tabButtonsList = document.querySelectorAll("#tab-buttons-wrapper button");
         const tabElsList = document.querySelectorAll("#tabs-wrapper .tab");
 
-        const tabs = this.#tabs = new Tabs(tabButtonsList, tabElsList, this.#currentTabIndex);
-        this.#currentTabEl = tabElsList[tabs.activeTabIndex];
+        const tabs = this.#tabs = new Tabs(tabButtonsList, null, this.#currentTabIndex);*/
+        //this.#currentTabEl = tabElsList[tabs.activeTabIndex];
 
-        tabs.addEventListener("change", (event) => {
+        /*tabs.addEventListener("change", (event) => {
             if (this.#hasChanges()) {
                 if (confirm("Имеются в наличии несохраненные данные, переходим не сохраняя?") === true) {
                     this.#removeChanges();
@@ -183,9 +177,22 @@ export class App {
 
         tabs.addEventListener("changed", (event) => {
             const tabIndex = this.#currentTabIndex = tabs.activeTabIndex;
-            this.#configCurrentSection = this.#config[this.#locationsList[tabIndex]];
+            this.#configCurrentSection = this.#config[this.#getCurrentLocationName()];
             this.#currentTabEl = tabElsList[tabIndex];
-        });
+            this.#setLocationData();
+        });*/
+    }
+
+
+    #setLocationData() {
+        //TODO: move it to locationContentEl
+        const model = this.#configModel;
+        const title = `Забег на ${model.currentLocationName} #${model.currentLocationAttempt}`;
+        const subtitle = `Последняя запись: ${model.lastSaveInfo}`;
+
+        //TODO: save links to elements
+        document.querySelector("#attempt-title").textContent = title;
+        document.querySelector("#last-save-title").textContent = subtitle;
     }
 
 
@@ -214,9 +221,6 @@ export class App {
             tab.querySelector(`[for=${lastId}]`)?.setAttribute("for", newId);
         });
 
-
-        tab.querySelector(".attempt").textContent += locationName + " #" + data.Attempt;
-        tab.querySelector(".last-save").textContent += this.#lastSaveInfo;
 
         const inputMe = tab.querySelector(`#${idPrefix}deathsme`);
         const inputMercenary = tab.querySelector(`#${idPrefix}deaths`);
@@ -300,7 +304,7 @@ export class App {
     #checkOnlyDeathAndAddNothingsIfItIs() {
         const currentLocation = this.#getCurrentLocationName().toLowerCase();
         const changeNoDeaths = this.#changesWrapper.childNodes;
-        const deaths = this.#changesWrapper.querySelectorAll(`[data-el-id=${currentLocation}-me], [data-el-id=${currentLocation}-mercenary]`);
+        const deaths = this.#changesWrapper.querySelectorAll(`[data-el-id=${currentLocation}-deathsme], [data-el-id=${currentLocation}-deaths]`);
         if (deaths?.length === changeNoDeaths?.length) {
             //only death changed, add nothing
             this.#getCurrentTabEl("[name=Nothings]").value++;
@@ -519,4 +523,4 @@ export class App {
 
 }
 
-new App();
+window.app = new App();
