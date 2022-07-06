@@ -213,15 +213,15 @@ const writeResult = (json) => {
 	const location = Object.keys(json.data)[json.tabIndex];
 	const data = json.data[location];
 
-	let message = `Забег на ${location} #${data.Attempt}\n\n`;
-	message += `Я умер раз: ${data.DeathsMe}\n\n`;
-	message += `Мерк умер раз: ${data.Deaths}\n\n`;
-	message += `Ничего: ${data.Nothings}\n\n`;
-	message += `Ключей: ${data.Keys}\n\n`;
-	message += `Скиллеров: ${data.Skillers}\n\n`;
-	message += `Норм чарм: ${data.Charms}\n\n`;
-	message += `Уников: ${data.Uniques}\n\n`;
-	message += `Сетовых: ${data.Sets}\n\n`;
+	let message = `Забег на ${location} #${data.Attempt}\n`;
+	message += `Я умер раз: ${data.DeathsMe}\n`;
+	message += `Мерк умер раз: ${data.Deaths}\n`;
+	message += `Ничего: ${data.Nothings}\n`;
+	message += `Ключей: ${data.Keys}\n`;
+	message += `Скиллеров: ${data.Skillers}\n`;
+	message += `Норм чарм: ${data.Charms}\n`;
+	message += `Уников: ${data.Uniques}\n`;
+	message += `Сетовых: ${data.Sets}\n`;
 	message += `Руны:\n`;
 
 	for (let rune in data.Runes) {
