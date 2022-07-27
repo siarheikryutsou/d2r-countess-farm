@@ -154,9 +154,18 @@ const updateConfig = async (requestBody) => {
 	const date = new Date();
 	const locale = "ru-RU";
 
+	console.clear();
+	console.log("Last:")
+	console.log(currentConfigJson.data[requestBodyJson.location]);
+	console.log("=================")
+
 	currentConfigJson.tabIndex = requestBodyJson.tabIndex;
 	currentConfigJson.data[requestBodyJson.location] = requestBodyJson.data;
 	currentConfigJson.lastSave = `${requestBodyJson.location} — ${date.toLocaleDateString(locale)} (${date.toLocaleTimeString("ru-RU")})`;
+
+	console.log("Save:")
+	console.log(requestBodyJson.data);
+	console.log("==========================");
 
 	fs.writeFile(configFileName, JSON.stringify(currentConfigJson)).then(() => {
 		fs.readFile(configFileName)
