@@ -13,6 +13,9 @@ html {
 .hidden {
   visibility: hidden;
 }
+.half-opacity {
+  opacity: 0.5;
+}
 .hidden-abs {
   display: none !important;
 }
@@ -114,6 +117,10 @@ body .set-color {
   background-color: #5a5a5a;
   opacity: 1;
   color: white;
+  pointer-events: none;
+}
+#tab-buttons-wrapper button.disabled-by-router {
+  opacity: 0.5;
 }
 .route-planner-wrapper {
   padding: 0 20px 20px 20px;
@@ -146,11 +153,13 @@ body .set-color {
 .route-planner-wrapper .route-location {
   border: 1px solid grey;
   border-radius: 5px;
-  cursor: move;
   user-select: none;
   background: #e6fffd;
   box-sizing: border-box;
   position: relative;
+}
+.route-planner-wrapper .route-location[draggable=true] {
+  cursor: move;
 }
 .route-planner-wrapper .route-location.active {
   background-color: #e6ffbc;

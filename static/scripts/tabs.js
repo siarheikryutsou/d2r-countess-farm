@@ -1,78 +1,93 @@
 export class Tabs extends EventTarget {
 
-    _buttons = null;
-    _tabEls = null;
-    _activeIndex = null;
-    _activeTabDisplayStyle;
+    #buttons = null;
+    #tabEls = null;
+    #activeIndex = null;
+    #activeTabDisplayStyle;
 
     constructor(buttons, tabEls, activeIndex = 0, activeTabDisplayStyle = "block") {
         super();
-        this._buttons = buttons;
-        this._tabEls = tabEls;
-        this._activeIndex = activeIndex || 0;
-        this._activeTabDisplayStyle = activeTabDisplayStyle;
+        this.#buttons = buttons;
+        this.#tabEls = tabEls;
+        this.#activeIndex = activeIndex || 0;
+        this.#activeTabDisplayStyle = activeTabDisplayStyle;
 
-        this._init();
+        this.#init();
     }
 
-    _init() {
-        for (let i = 0, len = this._tabEls.length; i < len; i++) {
-            if (i !== this._activeIndex) {
-                this._deactivateActiveTab(i);
+    #init() {
+        for (let i = 0, len = this.#tabEls.length; i < len; i++) {
+            if (i !== this.#activeIndex) {
+                this.#deactivateActiveTab(i);
             } else {
-                this._activateTab(i);
+                this.#activateTab(i);
             }
 
-            this._buttons[i].addEventListener("click", this._onTabButtonClick.bind(this));
+            this.#buttons[i].addEventListener("click", this.#onTabButtonClick.bind(this));
         }
     }
 
 
-    _activateTab(index = this._activeIndex) {
-        this._tabEls[index].style.display = this._activeTabDisplayStyle;
-        this._buttons[index].disabled = true;
-        this._activeIndex = index;
+    #activateTab(index = this.#activeIndex) {
+        this.#tabEls[index].style.display = this.#activeTabDisplayStyle;
+        this.#buttons[index].disabled = true;
+        this.#activeIndex = index;
     }
 
-    _deactivateActiveTab(index = this._activeIndex) {
-        const tabEl = this._tabEls[index];
-        const button = this._buttons[index];
-        this._tabEls[index].style.display = "none";
-        this._buttons[index].disabled = false;
+    #deactivateActiveTab(index = this.#activeIndex) {
+        this.#tabEls[index].style.display = "none";
+        this.#buttons[index].disabled = false;
     }
 
 
-    _onTabButtonClick(event) {
+    #onTabButtonClick(event) {
         const changeEvent = new Event("change", {bubbles: true, cancelable: true});
         this.dispatchEvent(changeEvent);
         if (changeEvent.defaultPrevented) {
             return;
         }
 
-        const index = this._getActiveIndexByButton(event.currentTarget);
-        this._deactivateActiveTab();
-        this._activeIndex = index;
-        this._activateTab();
+        const index = this.#getActiveIndexByButton(event.currentTarget);
+        this.#deactivateActiveTab();
+        this.#activeIndex = index;
+        this.#activateTab();
         this.dispatchEvent(new Event("changed"));
     }
 
 
-    _getActiveIndexByButton(button) {
-        for (let i = 0, len = this._buttons.length; i < len; i++) {
-            if (button === this._buttons[i]) {
+    #getActiveIndexByButton(button) {
+        for (let i = 0, len = this.#buttons.length; i < len; i++) {
+            if (button === this.#buttons[i]) {
                 return i;
             }
         }
-
         return -1;
     }
 
     get activeTabIndex() {
-        return this._activeIndex;
+        return this.#activeIndex;
     }
 
     set activeTabIndex(value) {
-        this._buttons[value].click();
+        this.#buttons[value].click();
+    }
+
+    disable() {
+        this.#buttons.forEach((button, index) => {
+            if (index !== this.#activeIndex) {
+                button.classList.add("disabled-by-router");
+            }
+            button.disabled = true;
+        });
+    }
+
+    enable() {
+        this.#buttons.forEach((button, index) => {
+            button.classList.remove("disabled-by-router");
+            if (index !== this.#activeIndex) {
+                button.disabled = false;
+            }
+        });
     }
 
 }
